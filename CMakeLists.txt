@@ -11,8 +11,10 @@ include_directories(include  ${OPENAL_INCLUDE_DIR})
 # RaumKlang library
 
 set(SRC
+	src/Mutex.cpp
 	src/OggVorbisLoader.cpp
 	src/OggVorbisStream.cpp
+	src/ScopedLock.cpp
 	src/SoundEngine.cpp
 	src/SoundRecorder.cpp
 	src/SoundSource.cpp
