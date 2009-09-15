@@ -64,9 +64,9 @@ namespace rk
 	unsigned int SoundSourceOpenAL::fillBuffer(unsigned int buffer,
 		unsigned int position)
 	{
-		char data[4096];
+		char data[16384];
 		// TODO: Format
-		unsigned int size = stream->read(data, 1024) * 4;
+		unsigned int size = stream->read(data, 4096) * 4;
 		alBufferData(buffer, AL_FORMAT_STEREO16, data, size, 44100);
 		return size;
 	}

@@ -19,8 +19,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <raumklang/SoundEngine.hpp>
 
+#include <vector>
+
 namespace rk
 {
+	class SoundOpenAL;
+
 	class SoundEngineOpenAL: public SoundEngine
 	{
 		public:
@@ -48,11 +52,15 @@ namespace rk
 
 			virtual bool update();
 
+			void registerSoundUpdates(SoundOpenAL *sound);
+			void removeSoundUpdates(SoundOpenAL *sound);
+
 			virtual ~SoundEngineOpenAL();
 		private:
 			SoundEngineOpenAL();
 
 			Listener *listener;
+			std::vector<SoundOpenAL*> sounds;
 	};
 }
 

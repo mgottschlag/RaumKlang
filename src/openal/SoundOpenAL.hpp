@@ -22,11 +22,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 namespace rk
 {
 	class SoundSourceOpenAL;
+	class SoundEngineOpenAL;
 
 	class SoundOpenAL: public Sound
 	{
 		public:
-			SoundOpenAL();
+			SoundOpenAL(SoundEngineOpenAL *engine);
 			virtual ~SoundOpenAL();
 
 			bool init(SoundSourceOpenAL *source);
@@ -59,7 +60,10 @@ namespace rk
 			virtual unsigned int getPlayPosition();
 
 			virtual SoundSource *getSoundSource();
+
+			void update();
 		private:
+			SoundEngineOpenAL *engine;
 			unsigned int sound;
 			SoundSourceOpenAL *source;
 			unsigned int buffers[3];

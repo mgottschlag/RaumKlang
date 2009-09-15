@@ -56,6 +56,8 @@ namespace rk
 		listener = new ListenerOpenAL();
 		// Add stream loaders
 		initStreamLoaders();
+		// Start update thread
+		startUpdateThread();
 		return true;
 	}
 	void SoundEngineOpenAL::destroy()
@@ -103,7 +105,7 @@ namespace rk
 	Sound *SoundEngineOpenAL::play2D(SoundSource *source, bool looped, bool paused)
 	{
 		// Create sound
-		SoundOpenAL *sound = new SoundOpenAL();
+		SoundOpenAL *sound = new SoundOpenAL(this);
 		if (!sound->init((SoundSourceOpenAL*)source))
 		{
 			delete sound;
@@ -126,7 +128,7 @@ namespace rk
 	Sound *SoundEngineOpenAL::play3D(SoundSource *source, bool looped, bool paused)
 	{
 		// Create sound
-		SoundOpenAL *sound = new SoundOpenAL();
+		SoundOpenAL *sound = new SoundOpenAL(this);
 		if (!sound->init((SoundSourceOpenAL*)source))
 		{
 			delete sound;
@@ -149,7 +151,29 @@ namespace rk
 
 	bool SoundEngineOpenAL::update()
 	{
+		for (unsigned int i = 0; i < sounds.size(); i++)
+		{
+			sounds[i]->update();
+		}
 		return true;
+	}
+
+
+	void SoundEngineOpenAL::registerSoundUpdates(SoundOpenAL *sound)
+	{
+		sounds.push_back(sound);
+	}
+	void SoundEngineOpenAL::removeSoundUpdates(SoundOpenAL *sound)
+	{
+		// TODO: Different data structure for better performance
+		for (unsigned int i = 0; i < sounds.size(); i++)
+		{
+			if (sounds[i] == sound)
+			{
+				sounds.erase(sounds.begin() + i);
+				return;
+			}
+		}
 	}
 
 	SoundEngineOpenAL::~SoundEngineOpenAL()

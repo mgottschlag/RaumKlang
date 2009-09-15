@@ -16,17 +16,23 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "SoundOpenAL.hpp"
 #include "SoundSourceOpenAL.hpp"
+#include "SoundEngineOpenAL.hpp"
 
 #include <AL/al.h>
 
 namespace rk
 {
-	SoundOpenAL::SoundOpenAL()
+	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) : engine(engine),
+		source(0)
 	{
 	}
 	SoundOpenAL::~SoundOpenAL()
 	{
 		// TODO
+		// Remove updates
+		if (source && source->isStreamed())
+			engine->removeSoundUpdates(this);
+
 	}
 
 	bool SoundOpenAL::init(SoundSourceOpenAL *source)
@@ -48,6 +54,8 @@ namespace rk
 			position += source->fillBuffer(buffers[2], position);
 			alSourceQueueBuffers(sound, 3, buffers);
 			alSourcePlay(sound);
+			// Updates?
+			engine->registerSoundUpdates(this);
 		}
 		else
 		{
@@ -122,5 +130,23 @@ namespace rk
 
 	SoundSource *SoundOpenAL::getSoundSource()
 	{
+	}
+
+	void SoundOpenAL::update()
+	{
+		printf("Update.\n");
+		if (source->isStreamed())
+		{
+			// Refill processed buffers buffers
+			int processed;
+			alGetSourcei(sound, AL_BUFFERS_PROCESSED, &processed);
+			for (int i = 0; i < processed; i++)
+			{
+				unsigned int buffer;
+				alSourceUnqueueBuffers(sound, 1, &buffer);
+				position += source->fillBuffer(buffer, position);
+				alSourceQueueBuffers(sound, 1, &buffer);
+			}
+		}
 	}
 }

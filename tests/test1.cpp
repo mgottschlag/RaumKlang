@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	}
 	// Play a simple .wav
 	soundengine->play2D("media/The Final Rewind.ogg");
-	sleep(5);
+	getchar();
 	// Destroy sound engine
 	soundengine->destroy();
 	return 0;
