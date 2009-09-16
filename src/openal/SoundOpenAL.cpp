@@ -17,22 +17,35 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundOpenAL.hpp"
 #include "SoundSourceOpenAL.hpp"
 #include "SoundEngineOpenAL.hpp"
-
-#include <AL/al.h>
+#include "ScopedLock.hpp"
+#include "OpenAL.hpp"
 
 namespace rk
 {
 	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) : engine(engine),
-		source(0)
+		source(0), loaded(false)
 	{
 	}
 	SoundOpenAL::~SoundOpenAL()
 	{
-		// TODO
 		// Remove updates
 		if (source && source->isStreamed())
 			engine->removeSoundUpdates(this);
-
+		// Remove sound from global sound list
+		engine->removeSound(this);
+		// Delete OpenAL data
+		if (loaded)
+		{
+			alDeleteSources(1, &sound);
+			if (source && source->isStreamed())
+			{
+				alDeleteBuffers(3, buffers);
+			}
+			else
+			{
+				alDeleteBuffers(1, buffers);
+			}
+		}
 	}
 
 	bool SoundOpenAL::init(SoundSourceOpenAL *source)
@@ -62,6 +75,9 @@ namespace rk
 			alGenBuffers(1, buffers);
 			// TODO
 		}
+		loaded = true;
+		// Add sound to global sound list
+		engine->addSound(this);
 		return true;
 	}
 
@@ -134,7 +150,7 @@ namespace rk
 
 	void SoundOpenAL::update()
 	{
-		printf("Update.\n");
+		ScopedLock lock(mutex);
 		if (source->isStreamed())
 		{
 			// Refill processed buffers buffers

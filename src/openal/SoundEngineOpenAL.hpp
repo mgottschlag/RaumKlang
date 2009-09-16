@@ -19,6 +19,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <raumklang/SoundEngine.hpp>
 
+#include "Mutex.hpp"
+
 #include <vector>
 
 namespace rk
@@ -55,12 +57,21 @@ namespace rk
 			void registerSoundUpdates(SoundOpenAL *sound);
 			void removeSoundUpdates(SoundOpenAL *sound);
 
+			void addSound(SoundOpenAL *sound);
+			void removeSound(SoundOpenAL *sound);
+
 			virtual ~SoundEngineOpenAL();
 		private:
 			SoundEngineOpenAL();
 
 			Listener *listener;
+			std::vector<SoundOpenAL*> soundupdates;
 			std::vector<SoundOpenAL*> sounds;
+
+			volatile bool running;
+			volatile bool threadstopped;
+
+			Mutex mutex;
 	};
 }
 

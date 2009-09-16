@@ -14,43 +14,29 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef _RAUMKLANG_SOUNDSOURCEOPENAL_HPP_INCLUDED_
-#define _RAUMKLANG_SOUNDSOURCEOPENAL_HPP_INCLUDED_
-
-#include <raumklang/SoundSource.hpp>
-
-#include "Mutex.hpp"
+#include <AL/al.h>
+#include <AL/alut.h>
 
 namespace rk
 {
-	class SoundStream;
-
-	class SoundSourceOpenAL : public SoundSource
+	static inline const char *getOpenALErrorString(ALenum error)
 	{
-		public:
-			SoundSourceOpenAL();
-
-			bool init(std::string name, SoundStream *stream);
-
-			virtual void setStreamMode(StreamMode mode);
-			virtual StreamMode getStreamMode();
-
-			virtual bool isSeekable();
-
-			virtual unsigned int getLength();
-
-			bool isStreamed();
-
-			unsigned int getSize();
-			unsigned int fillBuffer(unsigned int buffer,
-				unsigned int position);
-
-			unsigned int getBuffer();
-		private:
-			SoundStream *stream;
-
-			Mutex mutex;
-	};
+		switch (error)
+		{
+			case AL_NO_ERROR:
+				return "AL_NO_ERROR";
+			case AL_INVALID_NAME:
+				return "AL_INVALID_NAME";
+			case AL_INVALID_ENUM:
+				return "AL_INVALID_ENUM";
+			case AL_INVALID_VALUE:
+				return "AL_INVALID_VALUE";
+			case AL_INVALID_OPERATION:
+				return "AL_INVALID_OPERATION";
+			case AL_OUT_OF_MEMORY:
+				return "AL_OUT_OF_MEMORY";
+			default:
+				return "Unknown OpenAL error";
+		}
+	}
 }
-
-#endif

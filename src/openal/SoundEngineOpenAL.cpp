@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "ListenerOpenAL.hpp"
 #include "SoundSourceOpenAL.hpp"
 #include "SoundOpenAL.hpp"
+#include "ScopedLock.hpp"
 
 #include <AL/alut.h>
 
@@ -57,17 +58,31 @@ namespace rk
 		// Add stream loaders
 		initStreamLoaders();
 		// Start update thread
+		running = true;
+		threadstopped = false;
 		startUpdateThread();
 		return true;
 	}
 	void SoundEngineOpenAL::destroy()
 	{
+		// Stop thread
+		running = false;
+		while (!threadstopped)
+			usleep(1000);
 		// Delete listener
 		if (listener)
 			delete listener;
-		// TODO: Delete sounds and sources
+		// TODO: Delete sources
+		// Delete sounds
+		while (sounds.size() > 0)
+		{
+			delete sounds[0];
+		}
 		// Destroy OpenAL context
-		alutExit();
+		if (!alutExit())
+		{
+			printf("alutExit: %s\n", alutGetErrorString(alutGetError()));
+		}
 		// Delete engine instance
 		delete this;
 	}
@@ -151,20 +166,43 @@ namespace rk
 
 	bool SoundEngineOpenAL::update()
 	{
+		ScopedLock lock(mutex);
 		for (unsigned int i = 0; i < sounds.size(); i++)
 		{
 			sounds[i]->update();
 		}
-		return true;
+		if (!running)
+			threadstopped = true;
+		return running;
 	}
-
 
 	void SoundEngineOpenAL::registerSoundUpdates(SoundOpenAL *sound)
 	{
-		sounds.push_back(sound);
+		ScopedLock lock(mutex);
+		soundupdates.push_back(sound);
 	}
 	void SoundEngineOpenAL::removeSoundUpdates(SoundOpenAL *sound)
 	{
+		ScopedLock lock(mutex);
+		// TODO: Different data structure for better performance
+		for (unsigned int i = 0; i < soundupdates.size(); i++)
+		{
+			if (soundupdates[i] == sound)
+			{
+				soundupdates.erase(soundupdates.begin() + i);
+				return;
+			}
+		}
+	}
+
+	void SoundEngineOpenAL::addSound(SoundOpenAL *sound)
+	{
+		ScopedLock lock(mutex);
+		sounds.push_back(sound);
+	}
+	void SoundEngineOpenAL::removeSound(SoundOpenAL *sound)
+	{
+		ScopedLock lock(mutex);
 		// TODO: Different data structure for better performance
 		for (unsigned int i = 0; i < sounds.size(); i++)
 		{

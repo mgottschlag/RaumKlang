@@ -19,6 +19,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <raumklang/Sound.hpp>
 
+#include "Mutex.hpp"
+
 namespace rk
 {
 	class SoundSourceOpenAL;
@@ -68,6 +70,9 @@ namespace rk
 			SoundSourceOpenAL *source;
 			unsigned int buffers[3];
 			unsigned int position;
+			bool loaded;
+
+			Mutex mutex;
 	};
 }
 

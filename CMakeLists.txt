@@ -6,7 +6,7 @@ find_package(OpenAL)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter")
 
-include_directories(include  ${OPENAL_INCLUDE_DIR})
+include_directories(include src ${OPENAL_INCLUDE_DIR})
 
 # RaumKlang library
 

@@ -15,6 +15,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "SoundSourceOpenAL.hpp"
+#include "ScopedLock.hpp"
 
 #include <raumklang/SoundStream.hpp>
 
@@ -64,6 +65,7 @@ namespace rk
 	unsigned int SoundSourceOpenAL::fillBuffer(unsigned int buffer,
 		unsigned int position)
 	{
+		ScopedLock lock(mutex);
 		char data[16384];
 		// TODO: Format
 		unsigned int size = stream->read(data, 4096) * 4;
