@@ -49,13 +49,16 @@ namespace rk
 		}
 	}
 
-	SoundSourceOpenAL::SoundSourceOpenAL() : refcount(0), stream(0)
+	SoundSourceOpenAL::SoundSourceOpenAL() : refcount(0), stream(0),
+		buffered(false), buffer(0)
 	{
 	}
 	SoundSourceOpenAL::~SoundSourceOpenAL()
 	{
 		if (stream)
 			stream->drop();
+		if (buffered)
+			alDeleteBuffers(1, &buffer);
 	}
 
 	bool SoundSourceOpenAL::init(std::string name, SoundStream *stream)
@@ -63,7 +66,23 @@ namespace rk
 		this->name = name;
 		this->stream = stream;
 		stream->grab();
-
+		// Buffer the sound if we have less than ~1MB data
+		SoundFormat format = stream->getFormat();
+		unsigned int datasize = stream->getSize() * format.getFrameSize();
+		if ((stream->getSize() != 0) && (datasize < 1000000))
+			buffered = true;
+		else
+			buffered = false;
+		if (buffered)
+		{
+			// Load buffered data
+			char *data = new char[datasize];
+			stream->read(data, stream->getSize());
+			alGenBuffers(1, &buffer);
+			alBufferData(buffer, getOpenALFormat(format), data,
+				stream->getSize() * format.getFrameSize(), format.samplerate);
+			delete[] data;
+		}
 		return true;
 	}
 
@@ -103,7 +122,7 @@ namespace rk
 
 	bool SoundSourceOpenAL::isStreamed()
 	{
-		return true;
+		return !buffered;
 	}
 
 	unsigned int SoundSourceOpenAL::getSize()
@@ -129,6 +148,6 @@ namespace rk
 
 	unsigned int SoundSourceOpenAL::getBuffer()
 	{
-		return 0;
+		return buffer;
 	}
 }

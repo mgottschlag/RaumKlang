@@ -28,9 +28,6 @@ namespace rk
 	}
 	SoundOpenAL::~SoundOpenAL()
 	{
-		// Remove updates
-		if (source)
-			source->drop();
 		// Delete OpenAL data
 		if (loaded)
 		{
@@ -39,11 +36,10 @@ namespace rk
 			{
 				alDeleteBuffers(3, buffers);
 			}
-			else
-			{
-				alDeleteBuffers(1, buffers);
-			}
 		}
+		// Drop sound source
+		if (source)
+			source->drop();
 	}
 
 	bool SoundOpenAL::init(SoundSourceOpenAL *source, bool is3d)
@@ -71,8 +67,8 @@ namespace rk
 		}
 		else
 		{
-			alGenBuffers(1, buffers);
-			// TODO
+			unsigned int buffer = source->getBuffer();
+			alSourceQueueBuffers(sound, 1, &buffer);
 		}
 		loaded = true;
 		// Add sound to global sound list

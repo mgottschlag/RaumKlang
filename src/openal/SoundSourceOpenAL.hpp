@@ -53,6 +53,8 @@ namespace rk
 		private:
 			mutable int refcount;
 			SoundStream *stream;
+			bool buffered;
+			unsigned int buffer;
 
 			Mutex mutex;
 	};
