@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "openal/SoundEngineOpenAL.hpp"
 #include "OggVorbisLoader.hpp"
+#include "WavLoader.hpp"
 
 #include <pthread.h>
 
@@ -27,7 +28,7 @@ namespace rk
 	{
 		while (1)
 		{
-			// TODO: Exiting from the loop
+			// Exiting from the loop
 			if (!((SoundEngine*)engine)->update())
 				break;
 			usleep(5000);
@@ -78,6 +79,7 @@ namespace rk
 	void SoundEngine::initStreamLoaders()
 	{
 		registerStreamLoader(&OggVorbisLoader::get());
+		registerStreamLoader(&WavLoader::get());
 	}
 	SoundStream *SoundEngine::getStream(std::string filename)
 	{

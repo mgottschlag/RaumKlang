@@ -18,6 +18,8 @@ set(SRC
 	src/SoundEngine.cpp
 	src/SoundRecorder.cpp
 	src/SoundSource.cpp
+	src/WavLoader.cpp
+	src/WavStream.cpp
 	src/openal/ListenerOpenAL.cpp
 	src/openal/SoundOpenAL.cpp
 	src/openal/SoundEngineOpenAL.cpp
