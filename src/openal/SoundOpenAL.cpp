@@ -69,7 +69,6 @@ namespace rk
 			position += source->fillBuffer(buffers[1], position);
 			position += source->fillBuffer(buffers[2], position);
 			alSourceQueueBuffers(sound, 3, buffers);
-			alSourcePlay(sound);
 			// Updates?
 			engine->registerSoundUpdates(this);
 		}
@@ -86,30 +85,49 @@ namespace rk
 
 	void SoundOpenAL::setPaused(bool paused)
 	{
+		if (!paused)
+			alSourcePlay(sound);
+		else
+			alSourcePause(sound);
 	}
 	bool SoundOpenAL::isPaused()
 	{
+		ALint state;
+		alGetSourcei(sound, AL_SOURCE_STATE, &state);
+		return state == AL_PAUSED;
 	}
 
 	void SoundOpenAL::stop()
 	{
+		alSourceStop(sound);
 	}
 	bool SoundOpenAL::isStopped()
 	{
+		ALint state;
+		alGetSourcei(sound, AL_SOURCE_STATE, &state);
+		return state == AL_STOPPED;
 	}
 
 	void SoundOpenAL::setPosition(const Vector3F &position)
 	{
+		alSource3f(sound, AL_POSITION, position.x, position.y, position.z);
 	}
 	Vector3F SoundOpenAL::getPosition()
 	{
+		Vector3F vel;
+		alGetSource3f(sound, AL_POSITION, &vel.x, &vel.y, &vel.z);
+		return vel;
 	}
 
 	void SoundOpenAL::setVelocity(const Vector3F &velocity)
 	{
+		alSource3f(sound, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	}
 	Vector3F SoundOpenAL::getVelocity()
 	{
+		Vector3F vel;
+		alGetSource3f(sound, AL_VELOCITY, &vel.x, &vel.y, &vel.z);
+		return vel;
 	}
 
 	bool SoundOpenAL::is3D()
@@ -118,16 +136,24 @@ namespace rk
 
 	void SoundOpenAL::setVolume(float volume)
 	{
+		alSourcef(sound, AL_GAIN, volume);
 	}
 	float SoundOpenAL::getVolume()
 	{
+		float volume;
+		alGetSourcef(sound, AL_GAIN, &volume);
+		return volume;
 	}
 
 	void SoundOpenAL::setLooped(bool looped)
 	{
+		alSourcei(sound, AL_LOOPING, looped ? AL_TRUE : AL_FALSE);
 	}
 	bool SoundOpenAL::isLooped()
 	{
+		ALenum looped;
+		alGetSourcei(sound, AL_LOOPING, &looped);
+		return looped == AL_TRUE;
 	}
 
 	void SoundOpenAL::setPan(float pan)
@@ -149,6 +175,7 @@ namespace rk
 
 	SoundSource *SoundOpenAL::getSoundSource()
 	{
+		return source;
 	}
 
 	void SoundOpenAL::update()
