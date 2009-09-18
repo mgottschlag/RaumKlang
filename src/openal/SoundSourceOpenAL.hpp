@@ -29,6 +29,7 @@ namespace rk
 	{
 		public:
 			SoundSourceOpenAL();
+			virtual ~SoundSourceOpenAL();
 
 			bool init(std::string name, SoundStream *stream);
 

@@ -17,9 +17,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _RAUMKLANG_SOUNDSTREAM_HPP_INCLUDED_
 #define _RAUMKLANG_SOUNDSTREAM_HPP_INCLUDED_
 
+#include <raumklang/ReferenceCounted.hpp>
+
 namespace rk
 {
-	class SoundStream
+	class SoundStream : public ReferenceCounted
 	{
 		public:
 			virtual unsigned int read(void *target, unsigned int count) = 0;

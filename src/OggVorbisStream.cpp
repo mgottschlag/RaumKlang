@@ -47,13 +47,16 @@ namespace rk
 		return ftell(file);
 	}
 
-	OggVorbisStream::OggVorbisStream()
+	OggVorbisStream::OggVorbisStream() : SoundStream(), file(0), ovfile(0)
 	{
-		file = 0;
-		ovfile = 0;
 	}
 	OggVorbisStream::~OggVorbisStream()
 	{
+		if (ovfile)
+		{
+			ov_clear(ovfile);
+			delete ovfile;
+		}
 	}
 
 	bool OggVorbisStream::load(std::string filename)

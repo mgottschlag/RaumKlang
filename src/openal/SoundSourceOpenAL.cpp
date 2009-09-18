@@ -23,14 +23,20 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
-	SoundSourceOpenAL::SoundSourceOpenAL()
+	SoundSourceOpenAL::SoundSourceOpenAL() : refcount(0), stream(0)
 	{
+	}
+	SoundSourceOpenAL::~SoundSourceOpenAL()
+	{
+		if (stream)
+			stream->drop();
 	}
 
 	bool SoundSourceOpenAL::init(std::string name, SoundStream *stream)
 	{
 		this->name = name;
 		this->stream = stream;
+		stream->grab();
 
 		return true;
 	}
