@@ -63,6 +63,9 @@ namespace rk
 
 			virtual SoundSource *getSoundSource();
 
+			virtual void grab() const;
+			virtual void drop() const;
+
 			void update();
 		private:
 			SoundEngineOpenAL *engine;
@@ -71,6 +74,7 @@ namespace rk
 			unsigned int buffers[3];
 			unsigned int position;
 			bool loaded;
+			mutable int refcount;
 
 			Mutex mutex;
 	};

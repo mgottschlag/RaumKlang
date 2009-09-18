@@ -54,9 +54,6 @@ namespace rk
 
 			virtual bool update();
 
-			void registerSoundUpdates(SoundOpenAL *sound);
-			void removeSoundUpdates(SoundOpenAL *sound);
-
 			void addSound(SoundOpenAL *sound);
 			void removeSound(SoundOpenAL *sound);
 
@@ -65,7 +62,6 @@ namespace rk
 			SoundEngineOpenAL();
 
 			Listener *listener;
-			std::vector<SoundOpenAL*> soundupdates;
 			std::vector<SoundOpenAL*> sounds;
 
 			volatile bool running;

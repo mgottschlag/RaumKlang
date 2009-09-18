@@ -18,17 +18,20 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define _RAUMKLANG_SOUND_HPP_INCLUDED_
 
 #include <raumklang/Vector3.hpp>
+#include <raumklang/ReferenceCounted.hpp>
 
 namespace rk
 {
 	class SoundSource;
 
 	/**
-	 * Main class for every 2D or 3D sound.
-	 *
-	 * @todo Reference counting!
+	 * Main class for every 2D or 3D sound. This class uses reference counting.
+	 * Additionally to the references the user creates and registers (via
+	 * grab()), the engine registers one reference as long as the sound is
+	 * played. As soon as it is stopped, this reference is dropped and if there
+	 * are no user references, the sound is deleted.
 	 */
-	class Sound
+	class Sound : public ReferenceCountedBase
 	{
 		public:
 			virtual ~Sound()

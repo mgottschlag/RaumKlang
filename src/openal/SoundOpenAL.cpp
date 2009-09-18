@@ -22,19 +22,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
-	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) : engine(engine),
-		source(0), loaded(false)
+	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) :engine(engine),
+		source(0), loaded(false), refcount(0)
 	{
 	}
 	SoundOpenAL::~SoundOpenAL()
 	{
 		// Remove updates
-		if (source && source->isStreamed())
-			engine->removeSoundUpdates(this);
 		if (source)
 			source->drop();
-		// Remove sound from global sound list
-		engine->removeSound(this);
 		// Delete OpenAL data
 		if (loaded)
 		{
@@ -69,8 +65,6 @@ namespace rk
 			position += source->fillBuffer(buffers[1], position);
 			position += source->fillBuffer(buffers[2], position);
 			alSourceQueueBuffers(sound, 3, buffers);
-			// Updates?
-			engine->registerSoundUpdates(this);
 		}
 		else
 		{
@@ -99,7 +93,10 @@ namespace rk
 
 	void SoundOpenAL::stop()
 	{
+		grab();
 		alSourceStop(sound);
+		engine->removeSound(this);
+		drop();
 	}
 	bool SoundOpenAL::isStopped()
 	{
@@ -176,6 +173,21 @@ namespace rk
 	SoundSource *SoundOpenAL::getSoundSource()
 	{
 		return source;
+	}
+
+	void SoundOpenAL::grab() const
+	{
+		ScopedLock lock(mutex);
+		refcount++;
+	}
+	void SoundOpenAL::drop() const
+	{
+		mutex.lock();
+		refcount--;
+		if (refcount == 0)
+			delete this;
+		else
+			mutex.unlock();
 	}
 
 	void SoundOpenAL::update()

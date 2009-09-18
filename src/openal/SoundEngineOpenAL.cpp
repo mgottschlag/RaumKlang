@@ -74,10 +74,11 @@ namespace rk
 			delete listener;
 		// TODO: Delete sources
 		// Delete sounds
-		while (sounds.size() > 0)
+		for (unsigned int i = 0; i < sounds.size(); i++)
 		{
-			delete sounds[0];
+			sounds[i]->drop();
 		}
+		sounds.clear();
 		// Destroy OpenAL context
 		if (!alutExit())
 		{
@@ -169,36 +170,28 @@ namespace rk
 		ScopedLock lock(mutex);
 		for (unsigned int i = 0; i < sounds.size(); i++)
 		{
-			sounds[i]->update();
+			if (sounds[i]->isStopped())
+			{
+				// Remove stopped sounds
+				sounds[i]->drop();
+				sounds.erase(sounds.begin() + i);
+				i--;
+			}
+			else
+			{
+				sounds[i]->update();
+			}
 		}
 		if (!running)
 			threadstopped = true;
 		return running;
 	}
 
-	void SoundEngineOpenAL::registerSoundUpdates(SoundOpenAL *sound)
-	{
-		ScopedLock lock(mutex);
-		soundupdates.push_back(sound);
-	}
-	void SoundEngineOpenAL::removeSoundUpdates(SoundOpenAL *sound)
-	{
-		ScopedLock lock(mutex);
-		// TODO: Different data structure for better performance
-		for (unsigned int i = 0; i < soundupdates.size(); i++)
-		{
-			if (soundupdates[i] == sound)
-			{
-				soundupdates.erase(soundupdates.begin() + i);
-				return;
-			}
-		}
-	}
-
 	void SoundEngineOpenAL::addSound(SoundOpenAL *sound)
 	{
 		ScopedLock lock(mutex);
 		sounds.push_back(sound);
+		sound->grab();
 	}
 	void SoundEngineOpenAL::removeSound(SoundOpenAL *sound)
 	{
@@ -208,6 +201,7 @@ namespace rk
 		{
 			if (sounds[i] == sound)
 			{
+				sound->drop();
 				sounds.erase(sounds.begin() + i);
 				return;
 			}
