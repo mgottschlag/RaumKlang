@@ -122,7 +122,7 @@ namespace rk
 	{
 		// Create sound
 		SoundOpenAL *sound = new SoundOpenAL(this);
-		if (!sound->init((SoundSourceOpenAL*)source))
+		if (!sound->init((SoundSourceOpenAL*)source, false))
 		{
 			delete sound;
 			return 0;
@@ -145,7 +145,7 @@ namespace rk
 	{
 		// Create sound
 		SoundOpenAL *sound = new SoundOpenAL(this);
-		if (!sound->init((SoundSourceOpenAL*)source))
+		if (!sound->init((SoundSourceOpenAL*)source, true))
 		{
 			delete sound;
 			return 0;

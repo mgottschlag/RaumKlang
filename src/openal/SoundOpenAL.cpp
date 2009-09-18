@@ -46,9 +46,10 @@ namespace rk
 		}
 	}
 
-	bool SoundOpenAL::init(SoundSourceOpenAL *source)
+	bool SoundOpenAL::init(SoundSourceOpenAL *source, bool is3d)
 	{
 		this->source = source;
+		this->is3d = is3d;
 		source->grab();
 		position = 0;
 		// Create OpenAL source
@@ -57,6 +58,8 @@ namespace rk
 		alSourcef(sound, AL_GAIN, 1.0f);
 		alSource3f(sound, AL_POSITION, 0, 0, 0);
 		alSource3f(sound, AL_VELOCITY, 0, 0, 0);
+		if (!is3d)
+			alSourcei(sound, AL_SOURCE_RELATIVE, AL_TRUE);
 		// Fill initial buffers
 		if (source->isStreamed())
 		{
@@ -107,17 +110,23 @@ namespace rk
 
 	void SoundOpenAL::setPosition(const Vector3F &position)
 	{
+		if (!is3d)
+			return;
 		alSource3f(sound, AL_POSITION, position.x, position.y, position.z);
 	}
 	Vector3F SoundOpenAL::getPosition()
 	{
-		Vector3F vel;
-		alGetSource3f(sound, AL_POSITION, &vel.x, &vel.y, &vel.z);
-		return vel;
+		if (!is3d)
+			return Vector3F(0, 0, 0);
+		Vector3F pos;
+		alGetSource3f(sound, AL_POSITION, &pos.x, &pos.y, &pos.z);
+		return pos;
 	}
 
 	void SoundOpenAL::setVelocity(const Vector3F &velocity)
 	{
+		if (!is3d)
+			return;
 		alSource3f(sound, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	}
 	Vector3F SoundOpenAL::getVelocity()
@@ -129,6 +138,7 @@ namespace rk
 
 	bool SoundOpenAL::is3D()
 	{
+		return is3d;
 	}
 
 	void SoundOpenAL::setVolume(float volume)
@@ -155,9 +165,17 @@ namespace rk
 
 	void SoundOpenAL::setPan(float pan)
 	{
+		if (is3d)
+			return;
+		alSource3f(sound, AL_POSITION, pan, 0, 0);
 	}
 	float SoundOpenAL::getPan()
 	{
+		if (is3d)
+			return 0;
+		Vector3F pos;
+		alGetSource3f(sound, AL_POSITION, &pos.x, &pos.y, &pos.z);
+		return pos.x;
 	}
 
 	unsigned int SoundOpenAL::getLength()

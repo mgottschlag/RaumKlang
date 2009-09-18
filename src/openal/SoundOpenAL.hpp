@@ -32,7 +32,7 @@ namespace rk
 			SoundOpenAL(SoundEngineOpenAL *engine);
 			virtual ~SoundOpenAL();
 
-			bool init(SoundSourceOpenAL *source);
+			bool init(SoundSourceOpenAL *source, bool is3d);
 
 			virtual void setPaused(bool paused);
 			virtual bool isPaused();
@@ -74,6 +74,7 @@ namespace rk
 			unsigned int buffers[3];
 			unsigned int position;
 			bool loaded;
+			bool is3d;
 			mutable int refcount;
 
 			Mutex mutex;
