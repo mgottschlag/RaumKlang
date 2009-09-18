@@ -53,6 +53,21 @@ namespace rk
 		return 0;
 	}
 
+	void SoundSourceOpenAL::grab() const
+	{
+		ScopedLock lock(mutex);
+		refcount++;
+	}
+	void SoundSourceOpenAL::drop() const
+	{
+		mutex.lock();
+		refcount--;
+		if (refcount == 0)
+			delete this;
+		else
+			mutex.unlock();
+	}
+
 	bool SoundSourceOpenAL::isStreamed()
 	{
 		return true;

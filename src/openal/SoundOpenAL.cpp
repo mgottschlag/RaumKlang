@@ -31,6 +31,8 @@ namespace rk
 		// Remove updates
 		if (source && source->isStreamed())
 			engine->removeSoundUpdates(this);
+		if (source)
+			source->drop();
 		// Remove sound from global sound list
 		engine->removeSound(this);
 		// Delete OpenAL data
@@ -51,6 +53,7 @@ namespace rk
 	bool SoundOpenAL::init(SoundSourceOpenAL *source)
 	{
 		this->source = source;
+		source->grab();
 		position = 0;
 		// Create OpenAL source
 		alGenSources(1, &sound);

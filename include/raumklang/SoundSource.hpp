@@ -17,6 +17,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _RAUMKLANG_SOUNDSOURCE_HPP_INCLUDED_
 #define _RAUMKLANG_SOUNDSOURCE_HPP_INCLUDED_
 
+#include <raumklang/ReferenceCounted.hpp>
+
 #include <string>
 
 namespace rk
@@ -28,7 +30,7 @@ namespace rk
 		ESM_Buffered
 	};
 
-	class SoundSource
+	class SoundSource : public ReferenceCountedBase
 	{
 		public:
 			void setDefaultVolume(float volume);

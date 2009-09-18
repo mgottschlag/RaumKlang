@@ -39,6 +39,9 @@ namespace rk
 
 			virtual unsigned int getLength();
 
+			virtual void grab() const;
+			virtual void drop() const;
+
 			bool isStreamed();
 
 			unsigned int getSize();
@@ -47,6 +50,7 @@ namespace rk
 
 			unsigned int getBuffer();
 		private:
+			mutable int refcount;
 			SoundStream *stream;
 
 			Mutex mutex;
