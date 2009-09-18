@@ -19,17 +19,44 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	/**
+	 * Format of single samples.
+	 */
 	enum SampleFormat
 	{
+		/**
+		 * Samples are described by unsigned bytes in the range [0..255].
+		 */
 		ESF_UnsignedByte,
+		/**
+		 * Samples are described by signed words (2 bytes each) in the range
+		 * [-32768..32767].
+		 */
 		ESF_SignedWord
 	};
+	/**
+	 * Class describing the format of a sound stream.
+	 */
 	class SoundFormat
 	{
 		public:
+			/**
+			 * Number of channels. Supported values are 1 (mono) and 2 (stereo).
+			 */
 			unsigned int channels;
+			/**
+			 * Sample rate of the stream. A common value for example is 44100.
+			 */
 			unsigned int samplerate;
+			/**
+			 * Format and size of the single samples.
+			 */
 			SampleFormat format;
+			/**
+			 * Computes the size of a single frame. A frame consists of one
+			 * sample for each channel. For a stereo stream with 16bit samples
+			 * this function would return 4 (2 channels x 2 bytes).
+			 */
 			unsigned int getFrameSize()
 			{
 				switch (format)
