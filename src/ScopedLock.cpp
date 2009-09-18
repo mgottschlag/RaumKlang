@@ -18,7 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
-	ScopedLock::ScopedLock(Mutex &mutex) : mutex(mutex)
+	ScopedLock::ScopedLock(const Mutex &mutex) : mutex(mutex)
 	{
 		mutex.lock();
 	}

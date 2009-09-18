@@ -24,10 +24,10 @@ namespace rk
 	class ScopedLock
 	{
 		public:
-			ScopedLock(Mutex &mutex);
+			ScopedLock(const Mutex &mutex);
 			~ScopedLock();
 		private:
-			Mutex &mutex;
+			const Mutex &mutex;
 	};
 }
 

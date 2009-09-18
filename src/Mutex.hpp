@@ -27,11 +27,11 @@ namespace rk
 			Mutex();
 			~Mutex();
 
-			bool tryLock();
-			void lock();
-			void unlock();
+			bool tryLock() const;
+			void lock() const;
+			void unlock() const;
 		private:
-			pthread_mutex_t mutex;
+			mutable pthread_mutex_t mutex;
 	};
 }
 

@@ -27,15 +27,15 @@ namespace rk
 		pthread_mutex_destroy(&mutex);
 	}
 
-	bool Mutex::tryLock()
+	bool Mutex::tryLock() const
 	{
 		return pthread_mutex_trylock(&mutex) == 0;
 	}
-	void Mutex::lock()
+	void Mutex::lock() const
 	{
 		pthread_mutex_lock(&mutex);
 	}
-	void Mutex::unlock()
+	void Mutex::unlock() const
 	{
 		pthread_mutex_unlock(&mutex);
 	}
