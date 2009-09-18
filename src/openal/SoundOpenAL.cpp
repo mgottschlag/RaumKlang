@@ -180,12 +180,37 @@ namespace rk
 
 	unsigned int SoundOpenAL::getLength()
 	{
+		return source->getLength();
 	}
 	void SoundOpenAL::setPlayPosition(unsigned int msecs)
 	{
+		ScopedLock lock(mutex);
+		alSourcef(sound, AL_SEC_OFFSET, (float)msecs / 1000);
+		if (source->isStreamed())
+		{
+			// Get position in samples
+			int samplepos;
+			alGetSourcei(sound, AL_SAMPLE_OFFSET, &samplepos);
+			position = samplepos;
+			// Refill buffers
+			unsigned int buffers[3];
+			alSourceUnqueueBuffers(sound, 3, buffers);
+			for (int i = 0; i < 3; i++)
+			{
+				unsigned int framesread = source->fillBuffer(buffers[i], position);
+				if (framesread != 0)
+				{
+					position += framesread;
+					alSourceQueueBuffers(sound, 1, &buffers[i]);
+				}
+			}
+		}
 	}
 	unsigned int SoundOpenAL::getPlayPosition()
 	{
+		float position;
+		alGetSourcef(sound, AL_SEC_OFFSET, &position);
+		return position * 1000;
 	}
 
 	SoundSource *SoundOpenAL::getSoundSource()

@@ -82,7 +82,8 @@ namespace rk
 
 	unsigned int SoundSourceOpenAL::getLength()
 	{
-		return 0;
+		SoundFormat format = stream->getFormat();
+		return getSize() * 1000 / format.samplerate;
 	}
 
 	void SoundSourceOpenAL::grab() const
