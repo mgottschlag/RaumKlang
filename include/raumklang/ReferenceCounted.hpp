@@ -28,7 +28,7 @@ namespace rk
 		typedef T type;
 	};
 
-	class ReferenceCounted;
+	class ReferenceCountedBase;
 
 	/**
 	 * Class to derive other weak pointers from.
@@ -80,31 +80,26 @@ namespace rk
 			 * pointer. It will then automatically get invalidated if the
 			 * object is deleted.
 			 */
-			inline void attach(ReferenceCounted *newtarget);
+			inline void attach(ReferenceCountedBase *newtarget);
 
-			ReferenceCounted *target;
+			ReferenceCountedBase *target;
 		private:
 			GenericWeakPointer *next;
 			GenericWeakPointer *prev;
 	};
 
 	/**
-	 * Base class for all classes which use reference counting. Reference
-	 * counting makes sure that objects aren't deallocated as long as there are
-	 * references to them (see: SharedPointer) by just counting the references.
-	 * This is done via grab() (increments the reference count) and drop()
-	 * (decrements the reference count). When the reference count reaches 0, the
-	 * object is destroyed.
+	 * Like ReferenceCounted, but does not implement grab() and drop() itself.
+	 * Can be used to implement alternative ways of reference counting.
 	 */
-	class ReferenceCounted
+	class ReferenceCountedBase
 	{
 		public:
-			ReferenceCounted()
+			ReferenceCountedBase()
 			{
-				refcount = 0;
 				weakptr = 0;
 			}
-			virtual ~ReferenceCounted()
+			virtual ~ReferenceCountedBase()
 			{
 				// Reset weak pointers
 				while (weakptr)
@@ -114,14 +109,43 @@ namespace rk
 			/**
 			 * Increments the reference count.
 			 */
-			void grab() const
-			{
-				refcount++;
-			}
+			virtual void grab() const = 0;
 			/**
 			 * Decrements the reference count.
 			 */
-			void drop() const
+			virtual void drop() const = 0;
+		private:
+			GenericWeakPointer *weakptr;
+
+			friend class GenericWeakPointer;
+	};
+
+	/**
+	 * Base class for all classes which use reference counting. Reference
+	 * counting makes sure that objects aren't deallocated as long as there are
+	 * references to them (see: SharedPointer) by just counting the references.
+	 * This is done via grab() (increments the reference count) and drop()
+	 * (decrements the reference count). When the reference count reaches 0, the
+	 * object is destroyed.
+	 *
+	 * Not thread safe!
+	 */
+	class ReferenceCounted : public ReferenceCountedBase
+	{
+		public:
+			ReferenceCounted() : ReferenceCountedBase()
+			{
+				refcount = 0;
+			}
+			virtual ~ReferenceCounted()
+			{
+			}
+
+			virtual void grab() const
+			{
+				refcount++;
+			}
+			virtual void drop() const
 			{
 				refcount--;
 				if (refcount <= 0)
@@ -132,10 +156,6 @@ namespace rk
 			 * Number of references to the object.
 			 */
 			mutable int refcount;
-
-			GenericWeakPointer *weakptr;
-
-			friend class GenericWeakPointer;
 	};
 
 	/**
@@ -218,7 +238,7 @@ namespace rk
 			T *target;
 	};
 
-	void GenericWeakPointer::attach(ReferenceCounted *newtarget)
+	void GenericWeakPointer::attach(ReferenceCountedBase *newtarget)
 	{
 		// Remove the pointer from the old target first
 		if (target)
