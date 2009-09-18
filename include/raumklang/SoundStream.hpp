@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define _RAUMKLANG_SOUNDSTREAM_HPP_INCLUDED_
 
 #include <raumklang/ReferenceCounted.hpp>
+#include <raumklang/SoundFormat.hpp>
 
 namespace rk
 {
@@ -29,8 +30,7 @@ namespace rk
 			virtual void setPosition(unsigned int position) = 0;
 			virtual unsigned int getPosition() = 0;
 			virtual unsigned int getSize() = 0;
-
-			// TODO: Format
+			virtual SoundFormat getFormat() = 0;
 
 			virtual ~SoundStream()
 			{

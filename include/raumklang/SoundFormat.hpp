@@ -14,37 +14,22 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef _RAUMKLANG_OGGVORBISSTREAM_HPP_INCLUDED_
-#define _RAUMKLANG_OGGVORBISSTREAM_HPP_INCLUDED_
-
-#include <raumklang/SoundStream.hpp>
-
-#include <string>
-
-struct OggVorbis_File;
+#ifndef _RAUMKLANG_SOUNDFORMAT_HPP_INCLUDED_
+#define _RAUMKLANG_SOUNDFORMAT_HPP_INCLUDED_
 
 namespace rk
 {
-	class OggVorbisStream : public SoundStream
+	enum SampleFormat
+	{
+		ESF_UnsignedByte,
+		ESF_SignedWord
+	};
+	class SoundFormat
 	{
 		public:
-			OggVorbisStream();
-			virtual ~OggVorbisStream();
-
-			bool load(std::string filename);
-
-			virtual unsigned int read(void *target, unsigned int count);
-			virtual bool isSeekable();
-			virtual void setPosition(unsigned int position);
-			virtual unsigned int getPosition();
-			virtual unsigned int getSize();
-			virtual SoundFormat getFormat();
-		private:
-			void *file;
-			OggVorbis_File *ovfile;
-
-			bool stereo;
-			unsigned int rate;
+			unsigned int channels;
+			unsigned int samplerate;
+			SampleFormat format;
 	};
 }
 

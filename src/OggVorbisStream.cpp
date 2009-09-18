@@ -157,6 +157,14 @@ namespace rk
 	{
 		return ov_pcm_tell(ovfile);
 	}
+	SoundFormat OggVorbisStream::getFormat()
+	{
+		SoundFormat format;
+		format.format = ESF_SignedWord;
+		format.channels = stereo ? 2 : 1;
+		format.samplerate = rate;
+		return format;
+	}
 
 	unsigned int OggVorbisStream::getSize()
 	{
