@@ -95,10 +95,10 @@ namespace rk
 	unsigned int WavStream::read(void *target, unsigned int count)
 	{
 		// Read data
-		unsigned int bytesread = fread(target, framesize, count, (FILE*)file);
-		position += bytesread / framesize;
+		unsigned int samplesread = fread(target, framesize, count, (FILE*)file);
+		position += samplesread;
 		// Return number of samples read
-		return bytesread / framesize;
+		return samplesread;
 	}
 	bool WavStream::isSeekable()
 	{
@@ -108,6 +108,7 @@ namespace rk
 	{
 		fseek((FILE*)file, ((int)this->position - position) * framesize,
 			SEEK_CUR);
+		this->position = position;
 	}
 	unsigned int WavStream::getPosition()
 	{

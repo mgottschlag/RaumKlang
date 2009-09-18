@@ -23,6 +23,32 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	static ALenum getOpenALFormat(const SoundFormat &format)
+	{
+		switch (format.channels)
+		{
+			case 1:
+				switch (format.format)
+				{
+					case ESF_UnsignedByte:
+						return AL_FORMAT_MONO8;
+					case ESF_SignedWord:
+						return AL_FORMAT_MONO16;
+				}
+			case 2:
+				switch (format.format)
+				{
+					case ESF_UnsignedByte:
+						return AL_FORMAT_STEREO8;
+					case ESF_SignedWord:
+						return AL_FORMAT_STEREO16;
+				}
+			default:
+				printf("openal: Invalid number of channels.");
+				return 0;
+		}
+	}
+
 	SoundSourceOpenAL::SoundSourceOpenAL() : refcount(0), stream(0)
 	{
 	}
@@ -87,11 +113,17 @@ namespace rk
 		unsigned int position)
 	{
 		ScopedLock lock(mutex);
+		// Change stream position if necessary
+		if (position != stream->getPosition())
+			stream->setPosition(position);
+		// Read data
 		char data[16384];
-		// TODO: Format
-		unsigned int size = stream->read(data, 4096) * 4;
-		alBufferData(buffer, AL_FORMAT_STEREO16, data, size, 44100);
-		return size;
+		SoundFormat format = stream->getFormat();
+		unsigned int framecount = 16384 / format.getFrameSize();
+		unsigned int framesread = stream->read(data, framecount);
+		alBufferData(buffer, getOpenALFormat(format), data,
+			framesread * format.getFrameSize(), format.samplerate);
+		return framesread;
 	}
 
 	unsigned int SoundSourceOpenAL::getBuffer()

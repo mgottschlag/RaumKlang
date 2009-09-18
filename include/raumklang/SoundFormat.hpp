@@ -30,6 +30,16 @@ namespace rk
 			unsigned int channels;
 			unsigned int samplerate;
 			SampleFormat format;
+			unsigned int getFrameSize()
+			{
+				switch (format)
+				{
+					case ESF_UnsignedByte:
+						return channels;
+					case ESF_SignedWord:
+						return channels * 2;
+				}
+			}
 	};
 }
 

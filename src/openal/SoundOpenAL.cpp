@@ -163,8 +163,12 @@ namespace rk
 			{
 				unsigned int buffer;
 				alSourceUnqueueBuffers(sound, 1, &buffer);
-				position += source->fillBuffer(buffer, position);
-				alSourceQueueBuffers(sound, 1, &buffer);
+				unsigned int framesread = source->fillBuffer(buffer, position);
+				if (framesread != 0)
+				{
+					position += framesread;
+					alSourceQueueBuffers(sound, 1, &buffer);
+				}
 			}
 		}
 	}
