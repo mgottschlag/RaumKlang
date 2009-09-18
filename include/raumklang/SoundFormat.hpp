@@ -25,12 +25,12 @@ namespace rk
 	enum SampleFormat
 	{
 		/**
-		 * Samples are described by unsigned bytes in the range [0..255].
+		 * Samples are described by unsigned bytes in the range [0 - 255].
 		 */
 		ESF_UnsignedByte,
 		/**
 		 * Samples are described by signed words (2 bytes each) in the range
-		 * [-32768..32767].
+		 * [-32768 - 32767].
 		 */
 		ESF_SignedWord
 	};

@@ -21,12 +21,29 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	/**
+	 * Sound driver identifier.
+	 */
 	enum SoundDriver
 	{
+		/**
+		 * Null device. No sound is outputted, but the engine works as if a
+		 * real driver was used. Not yet implemented.
+		 */
 		ESD_None,
-		ESD_AutoDetect,
+		/**
+		 * ALSA backend. Not yet implemented.
+		 */
 		ESD_ALSA,
-		ESD_OpenAL
+		/**
+		 * Backend using the OpenAL 3D sound library.
+		 */
+		ESD_OpenAL,
+		/**
+		 * A sound driver is chosen automatically, ESD_None is used if no
+		 * working driver is available.
+		 */
+		ESD_AutoDetect
 	};
 }
 

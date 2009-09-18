@@ -21,6 +21,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	/**
+	 * Information about a single sound device.
+	 */
 	class SoundDevice
 	{
 		public:
@@ -32,10 +35,17 @@ namespace rk
 			{
 			}
 
+			/**
+			 * Returns the ID of the device which can be used with
+			 * SoundEngine::create().
+			 */
 			const std::string &getID()
 			{
 				return id;
 			}
+			/**
+			 * Returns a longer description of the device.
+			 */
 			const std::string &getDescription()
 			{
 				return description;

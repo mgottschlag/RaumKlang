@@ -35,7 +35,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * The engine is centered around the rk::SoundEngine class which holds methods
  * to load sound sources and play sounds. Sounds are represented by the
  * rk::Sound class and get their data from rk::SoundSource which again gets
- * the raw stream from the underlying rk::SoundStream.
+ * the raw stream from the underlying rk::SoundStream. On the other side,
+ * rk::Listener represents the virtual ear of the sound engine (can be
+ * retrieved via rk::SoundEngine::getListener()).
  * \subsection example Example
  * \code
  * #include <RaumKlang.hpp>

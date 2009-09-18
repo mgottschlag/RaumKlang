@@ -21,6 +21,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	/**
+	 * Virtual ear of the sound engine.
+	 */
 	class Listener
 	{
 		public:
@@ -28,13 +31,33 @@ namespace rk
 			{
 			}
 
+			/**
+			 * Sets the position of the listener. This only affects playback of
+			 * 3D sounds.
+			 */
 			virtual void setPosition(const Vector3F &position) = 0;
+			/**
+			 * Returns the position of the listener.
+			 */
 			virtual Vector3F getPosition() = 0;
 
+			/**
+			 * Sets the orientation of the listener in euler angles.
+			 */
 			virtual void setOrientation(const Vector3F &orientation) = 0;
+			/**
+			 * Returns the orientation of the listener.
+			 */
 			virtual Vector3F getOrientation() = 0;
 
+			/**
+			 * Sets the velocity of the listener. This is used for effects like
+			 * doppler effect.
+			 */
 			virtual void setVelocity(const Vector3F &velocity) = 0;
+			/**
+			 * Returns the velocity of the listener.
+			 */
 			virtual Vector3F getVelocity() = 0;
 	};
 }
