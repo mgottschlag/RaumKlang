@@ -176,6 +176,17 @@ namespace rk
 		return pos.x;
 	}
 
+	void SoundOpenAL::setPitch(float pitch)
+	{
+		alSourcef(sound, AL_PITCH, pitch);
+	}
+	float SoundOpenAL::getPitch()
+	{
+		float pitch;
+		alGetSourcef(sound, AL_PITCH, &pitch);
+		return pitch;
+	}
+
 	unsigned int SoundOpenAL::getLength()
 	{
 		return source->getLength();

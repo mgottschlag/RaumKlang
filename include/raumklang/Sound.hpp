@@ -119,6 +119,15 @@ namespace rk
 			 * Returns the panning of the sound.
 			 */
 			virtual float getPan() = 0;
+			/**
+			 * Sets the pitch of the sound. A factor 2 here means 12 half tones.
+			 */
+
+			virtual void setPitch(float pitch) = 0;
+			/**
+			 * Returns the pitch of the sound.
+			 */
+			virtual float getPitch() = 0;
 
 			/**
 			 * Returns the length of the sound stream.

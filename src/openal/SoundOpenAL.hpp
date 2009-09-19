@@ -57,6 +57,9 @@ namespace rk
 			virtual void setPan(float pan);
 			virtual float getPan();
 
+			virtual void setPitch(float pitch);
+			virtual float getPitch();
+
 			virtual unsigned int getLength();
 			virtual void setPlayPosition(unsigned int msecs);
 			virtual unsigned int getPlayPosition();
