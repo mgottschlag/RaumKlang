@@ -20,10 +20,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundOpenAL.hpp"
 #include "ScopedLock.hpp"
 #include "SoundRecorderOpenAL.hpp"
+#include "OpenAL.hpp"
 #include <raumklang/MemorySource.hpp>
 #include <raumklang/FileSource.hpp>
 
-#include <AL/alut.h>
+#include <AL/alc.h>
 #include <cstring>
 
 namespace rk
@@ -40,7 +41,6 @@ namespace rk
 		std::vector<SoundDevice> devices;
 		while (*devicelist)
 		{
-			printf("Ouput device: %s\n", devicelist);
 			devices.push_back(SoundDevice(devicelist, devicelist));
 			devicelist += strlen(devicelist) + 1;
 		}
@@ -49,7 +49,7 @@ namespace rk
 	SoundEngine *SoundEngineOpenAL::create(std::string device)
 	{
 		SoundEngineOpenAL *engine = new SoundEngineOpenAL();
-		if (!engine->init())
+		if (!engine->init(device))
 		{
 			delete engine;
 			return 0;
@@ -57,14 +57,21 @@ namespace rk
 		return engine;
 	}
 
-	bool SoundEngineOpenAL::init()
+	bool SoundEngineOpenAL::init(std::string device)
 	{
-		// Setup OpenAL
-		// TODO: Properly select the device
-		if (!alutInit(0, 0))
+		if (device == "")
 		{
-			return false;
+			// Get default device
+			device = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 		}
+		// Setup OpenAL context
+		ALCdevice *dev = alcOpenDevice(device.c_str());
+		if (!dev)
+			return false;
+		ALCcontext *context = alcCreateContext(dev, 0);
+		alcMakeContextCurrent(context);
+		if (alcGetError(dev) != ALC_NO_ERROR)
+			return false;
 		// Create listener
 		listener = new ListenerOpenAL();
 		// Add stream loaders
@@ -95,10 +102,21 @@ namespace rk
 		}
 		sounds.clear();
 		// Destroy OpenAL context
-		if (!alutExit())
+		unsigned int error = alGetError();
+		if (error != AL_NO_ERROR)
 		{
-			printf("alutExit: %s\n", alutGetErrorString(alutGetError()));
+			printf("AL error on exit: %s!\n", getOpenALErrorString(error));
 		}
+		ALCcontext *context = alcGetCurrentContext();
+		ALCdevice *dev = alcGetContextsDevice(context);
+		error = alcGetError(dev);
+		if (error != AL_NO_ERROR)
+		{
+			printf("ALC error on exit!\n");
+		}
+		alcMakeContextCurrent(0);
+		alcDestroyContext(context);
+		alcCloseDevice(dev);
 		// Delete engine instance
 		delete this;
 	}

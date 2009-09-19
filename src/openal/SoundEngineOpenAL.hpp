@@ -35,7 +35,7 @@ namespace rk
 			static std::vector<SoundDevice> getDevices();
 			static SoundEngine *create(std::string device = "");
 
-			bool init();
+			bool init(std::string device);
 			virtual void destroy();
 
 			virtual std::string getDriverName();

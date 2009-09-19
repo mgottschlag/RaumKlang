@@ -29,7 +29,7 @@ set(SRC
 )
 
 add_library(RaumKlang SHARED ${SRC})
-target_link_libraries(RaumKlang openal alut ogg vorbis vorbisfile pthread)
+target_link_libraries(RaumKlang openal ogg vorbis vorbisfile pthread)
 
 # Simple test
 
