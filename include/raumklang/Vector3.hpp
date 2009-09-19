@@ -17,16 +17,104 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _RAUMKLANG_VECTOR3_HPP_INCLUDED_
 #define _RAUMKLANG_VECTOR3_HPP_INCLUDED_
 
+#include <cmath>
+
 namespace rk
 {
+	/**
+	 * Class for three-dimensional vectors, used for positions/rotation.
+	 */
 	template<typename T> class Vector3
 	{
 		public:
+			/**
+			 * Constructor.
+			 */
 			Vector3() : x(0), y(0), z(0)
 			{
 			}
+			/**
+			 * Constructor.
+			 */
 			Vector3(T x, T y, T z) : x(x), y(y), z(z)
 			{
+			}
+
+			/**
+			 * Returns the squared length of the vector. Much less
+			 * computationally expensive than getLength(). Good for comparing
+			 * vector lengths.
+			 */
+			float getLengthSquared()
+			{
+				return x * x + y * y + z * z;
+			}
+			/**
+			 * Returns the length of the vector.
+			 */
+			float getLength()
+			{
+				return sqrt(getLengthSquared());
+			}
+
+			template<typename T2> Vector3<T> operator*(T2 s) const
+			{
+				return Vector3<T>((T)(x * s), (T)(y * s), (T)(z * s));
+			}
+			template<typename T2> Vector3<T> &operator*=(T2 s)
+			{
+				x = x * s;
+				y = y * s;
+				z = z * s;
+				return *this;
+			}
+			template<typename T2> Vector3<T> operator/(T2 s) const
+			{
+				return Vector3<T>((T)(x / s), (T)(y / s), (T)(z / s));
+			}
+			template<typename T2> Vector3<T> &operator/=(T2 s)
+			{
+				x = x / s;
+				y = y / s;
+				z = z / s;
+				return *this;
+			}
+			template<typename T2> Vector3<T> operator+(const Vector3<T2> &v) const
+			{
+				return Vector3<T>((T)(x + v.x), (T)(y + v.y), (T)(z + v.z));
+			}
+			template<typename T2> Vector3<T> operator-(const Vector3<T2> &v) const
+			{
+				return Vector3<T>((T)(x - v.x), (T)(y - v.y), (T)(z - v.z));
+			}
+			template<typename T2> Vector3<T> &operator=(const Vector3<T2> &v)
+			{
+				x = (T)v.x;
+				y = (T)v.y;
+				z = (T)v.z;
+				return *this;
+			}
+			template<typename T2> Vector3<T> &operator+=(const Vector3<T2> &v)
+			{
+				x += v.x;
+				y += v.y;
+				z += v.z;
+				return *this;
+			}
+			template<typename T2> Vector3<T> &operator-=(const Vector3<T2> &v)
+			{
+				x -= v.x;
+				y -= v.y;
+				z -= v.z;
+				return *this;
+			}
+			template<typename T2> bool operator==(const Vector3<T2> &v) const
+			{
+				return x == v.x && y == v.y && z == v.z;
+			}
+			template<typename T2> bool operator!=(const Vector3<T2> &v) const
+			{
+				return x != v.x || y != v.y || z != v.z;
 			}
 
 			T x;
