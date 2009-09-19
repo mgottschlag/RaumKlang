@@ -19,8 +19,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundSourceOpenAL.hpp"
 #include "SoundOpenAL.hpp"
 #include "ScopedLock.hpp"
+#include "SoundRecorderOpenAL.hpp"
 
 #include <AL/alut.h>
+#include <cstring>
 
 namespace rk
 {
@@ -30,8 +32,16 @@ namespace rk
 	}
 	std::vector<SoundDevice> SoundEngineOpenAL::getDevices()
 	{
+		// Get device list
+		const char *devicelist = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+		// Split list
 		std::vector<SoundDevice> devices;
-		devices.push_back(SoundDevice("default", "Default device."));
+		while (*devicelist)
+		{
+			printf("Ouput device: %s\n", devicelist);
+			devices.push_back(SoundDevice(devicelist, devicelist));
+			devicelist += strlen(devicelist) + 1;
+		}
 		return devices;
 	}
 	SoundEngine *SoundEngineOpenAL::create(std::string device)
@@ -72,6 +82,9 @@ namespace rk
 		// Delete listener
 		if (listener)
 			delete listener;
+		// Delete recorders
+		while (recorders.size() != 0)
+			recorders[0]->destroy();
 		// TODO: Delete sources
 		// Delete sounds
 		for (unsigned int i = 0; i < sounds.size(); i++)
@@ -167,12 +180,31 @@ namespace rk
 
 	std::vector<SoundDevice> SoundEngineOpenAL::getRecorderDevices()
 	{
-		// TODO
-		return std::vector<SoundDevice>();
+		// Get device list
+		const char *devicelist = alcGetString(NULL,
+			ALC_CAPTURE_DEVICE_SPECIFIER);
+		// Split list
+		std::vector<SoundDevice> devices;
+		while (*devicelist)
+		{
+			printf("Device: %s\n", devicelist);
+			devices.push_back(SoundDevice(devicelist, devicelist));
+			devicelist += strlen(devicelist) + 1;
+		}
+		return devices;
 	}
 	SoundRecorder *SoundEngineOpenAL::createSoundRecorder(std::string device)
 	{
-		return 0;
+		// Create recorder
+		SoundRecorderOpenAL *recorder = new SoundRecorderOpenAL(this);
+		if (!recorder->create(device))
+		{
+			delete recorder;
+			return 0;
+		}
+		// Add recorder to the recorder list for updates
+		recorders.push_back(recorder);
+		return recorder;
 	}
 
 	bool SoundEngineOpenAL::update()
@@ -191,6 +223,10 @@ namespace rk
 			{
 				sounds[i]->update();
 			}
+		}
+		for (unsigned int i = 0; i < recorders.size(); i++)
+		{
+			recorders[i]->update();
 		}
 		if (!running)
 			threadstopped = true;
@@ -213,6 +249,19 @@ namespace rk
 			{
 				sound->drop();
 				sounds.erase(sounds.begin() + i);
+				return;
+			}
+		}
+	}
+
+	void SoundEngineOpenAL::removeSoundRecorder(SoundRecorderOpenAL *recorder)
+	{
+		ScopedLock lock(mutex);
+		for (unsigned int i = 0; i < recorders.size(); i++)
+		{
+			if (recorders[i] == recorder)
+			{
+				recorders.erase(recorders.begin() + i);
 				return;
 			}
 		}

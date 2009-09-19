@@ -36,9 +36,10 @@ namespace rk
 			virtual void destroy() = 0;
 
 			/**
-			 * Starts recording sound with the given format.
+			 * Starts recording sound with the given format. This also calls
+			 * clearRecordedData() internally.
 			 */
-			virtual void startRecording(const SoundFormat &format) = 0;
+			virtual bool startRecording(const SoundFormat &format) = 0;
 			/**
 			 * Stops recording.
 			 */
@@ -57,6 +58,10 @@ namespace rk
 			 * buffer.
 			 */
 			virtual void clearRecordedData() = 0;
+			/**
+			 * Returns true if the recorder is currently capturing sound data.
+			 */
+			virtual bool isRecording() = 0;
 
 			/**
 			 * Returns the number of the driver used for this recorder, e.g.

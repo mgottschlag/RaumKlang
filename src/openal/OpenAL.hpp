@@ -17,6 +17,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <AL/al.h>
 #include <AL/alut.h>
 
+#include <raumklang/SoundFormat.hpp>
+
 namespace rk
 {
 	static inline const char *getOpenALErrorString(ALenum error)
@@ -37,6 +39,32 @@ namespace rk
 				return "AL_OUT_OF_MEMORY";
 			default:
 				return "Unknown OpenAL error";
+		}
+	}
+
+	static inline ALenum getOpenALFormat(const SoundFormat &format)
+	{
+		switch (format.channels)
+		{
+			case 1:
+				switch (format.format)
+				{
+					case ESF_UnsignedByte:
+						return AL_FORMAT_MONO8;
+					case ESF_SignedWord:
+						return AL_FORMAT_MONO16;
+				}
+			case 2:
+				switch (format.format)
+				{
+					case ESF_UnsignedByte:
+						return AL_FORMAT_STEREO8;
+					case ESF_SignedWord:
+						return AL_FORMAT_STEREO16;
+				}
+			default:
+				printf("openal: Invalid number of channels.");
+				return 0;
 		}
 	}
 }

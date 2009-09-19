@@ -16,39 +16,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "SoundSourceOpenAL.hpp"
 #include "ScopedLock.hpp"
+#include "OpenAL.hpp"
 
 #include <raumklang/SoundStream.hpp>
 
-#include <AL/al.h>
-
 namespace rk
 {
-	static ALenum getOpenALFormat(const SoundFormat &format)
-	{
-		switch (format.channels)
-		{
-			case 1:
-				switch (format.format)
-				{
-					case ESF_UnsignedByte:
-						return AL_FORMAT_MONO8;
-					case ESF_SignedWord:
-						return AL_FORMAT_MONO16;
-				}
-			case 2:
-				switch (format.format)
-				{
-					case ESF_UnsignedByte:
-						return AL_FORMAT_STEREO8;
-					case ESF_SignedWord:
-						return AL_FORMAT_STEREO16;
-				}
-			default:
-				printf("openal: Invalid number of channels.");
-				return 0;
-		}
-	}
-
 	SoundSourceOpenAL::SoundSourceOpenAL() : refcount(0), stream(0),
 		buffered(false), buffer(0)
 	{

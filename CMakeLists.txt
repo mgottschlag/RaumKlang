@@ -22,6 +22,7 @@ set(SRC
 	src/openal/ListenerOpenAL.cpp
 	src/openal/SoundOpenAL.cpp
 	src/openal/SoundEngineOpenAL.cpp
+	src/openal/SoundRecorderOpenAL.cpp
 	src/openal/SoundSourceOpenAL.cpp
 )
 

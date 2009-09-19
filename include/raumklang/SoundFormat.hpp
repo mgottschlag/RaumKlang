@@ -40,6 +40,15 @@ namespace rk
 	class SoundFormat
 	{
 		public:
+			SoundFormat(unsigned int channels, unsigned int samplerate,
+				SampleFormat format) : channels(channels),
+				samplerate(samplerate), format(format)
+			{
+			}
+			SoundFormat()
+			{
+			}
+
 			/**
 			 * Number of channels. Supported values are 1 (mono) and 2 (stereo).
 			 */
@@ -57,7 +66,7 @@ namespace rk
 			 * sample for each channel. For a stereo stream with 16bit samples
 			 * this function would return 4 (2 channels x 2 bytes).
 			 */
-			unsigned int getFrameSize()
+			unsigned int getFrameSize() const
 			{
 				switch (format)
 				{
@@ -65,6 +74,8 @@ namespace rk
 						return channels;
 					case ESF_SignedWord:
 						return channels * 2;
+					default:
+						return 0;
 				}
 			}
 	};

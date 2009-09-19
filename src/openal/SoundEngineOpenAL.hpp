@@ -26,6 +26,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 namespace rk
 {
 	class SoundOpenAL;
+	class SoundRecorderOpenAL;
 
 	class SoundEngineOpenAL: public SoundEngine
 	{
@@ -60,6 +61,8 @@ namespace rk
 			void addSound(SoundOpenAL *sound);
 			void removeSound(SoundOpenAL *sound);
 
+			void removeSoundRecorder(SoundRecorderOpenAL *recorder);
+
 			virtual ~SoundEngineOpenAL();
 		private:
 			SoundEngineOpenAL();
@@ -69,6 +72,8 @@ namespace rk
 
 			volatile bool running;
 			volatile bool threadstopped;
+
+			std::vector<SoundRecorderOpenAL*> recorders;
 
 			Mutex mutex;
 	};
