@@ -15,6 +15,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "OggVorbisStream.hpp"
+#include <raumklang/DataSource.hpp>
 
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
@@ -28,23 +29,49 @@ namespace rk
 	// TODO: Use proxy class here
 	static size_t vorbisReadCallback(void *buffer, size_t size, size_t count, void *fileptr)
 	{
-		FILE *file = (FILE*)fileptr;
-		return fread(buffer, size, count, file);
+		DataSource *file = (DataSource*)fileptr;
+		if (file->isSeekable())
+		{
+			unsigned int position = file->tell();
+			unsigned int read = file->read(buffer, size * count);
+			file->seek(position + (read / size) * size);
+			return read / size;
+		}
+		else
+			return file->read(buffer, size * count) / size;
 	}
 	static int vorbisSeekCallback(void *fileptr, ogg_int64_t offset, int whence)
 	{
-		FILE *file = (FILE*)fileptr;
-		return fseek(file, offset, whence);
+		DataSource *file = (DataSource*)fileptr;
+		if (whence == SEEK_SET)
+		{
+			if (file->seek(offset))
+				return 0;
+			return -1;
+		}
+		else if (whence == SEEK_CUR)
+		{
+			if (file->seek(offset, true))
+				return 0;
+			return -1;
+		}
+		else
+		{
+			if (file->seek(offset + file->getSize()))
+				return 0;
+			return -1;
+		}
 	}
 	static int vorbisCloseCallback(void *fileptr)
 	{
-		FILE *file = (FILE*)fileptr;
-		return fclose(file);
+		DataSource *file = (DataSource*)fileptr;
+		file->drop();
+		return 0;
 	}
 	static long vorbisTellCallback(void *fileptr)
 	{
-		FILE *file = (FILE*)fileptr;
-		return ftell(file);
+		DataSource *file = (DataSource*)fileptr;
+		return file->tell();
 	}
 
 	OggVorbisStream::OggVorbisStream() : SoundStream(), file(0), ovfile(0)
@@ -59,15 +86,9 @@ namespace rk
 		}
 	}
 
-	bool OggVorbisStream::load(std::string filename)
+	bool OggVorbisStream::load(std::string name, DataSource *source)
 	{
-		// Open file
-		file = fopen(filename.c_str(), "rb");
-		if (!file)
-		{
-			printf("Could not open ogg vorbis file \"%s\".\n", filename.c_str());
-			return false;
-		}
+		source->grab();
 		// Initialize file callbacks
 		ov_callbacks callbacks;
 		callbacks.read_func = vorbisReadCallback;
@@ -76,10 +97,10 @@ namespace rk
 		callbacks.tell_func = vorbisTellCallback;
 		// Load file
 		ovfile = new OggVorbis_File;
-		int result = ov_open_callbacks(file, ovfile, 0, 0, callbacks);
+		int result = ov_open_callbacks(source, ovfile, 0, 0, callbacks);
 		if(result < 0)
 		{
-			printf("Could not load ogg stream \"%s\".\n", filename.c_str());
+			printf("Could not load ogg stream \"%s\".\n", name.c_str());
 			delete ovfile;
 			ovfile = 0;
 			return false;

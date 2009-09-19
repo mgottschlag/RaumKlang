@@ -15,6 +15,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "WavStream.hpp"
+#include <raumklang/DataSource.hpp>
 
 #include <iostream>
 #include <cstdio>
@@ -49,28 +50,22 @@ namespace rk
 	} __attribute((packed));
 	#endif
 
-	WavStream::WavStream() : SoundStream(), file(0)
+	WavStream::WavStream() : SoundStream(), source(0)
 	{
 	}
 	WavStream::~WavStream()
 	{
-		if (file)
-			fclose((FILE*)file);
+		if (source)
+			source->drop();
 	}
 
-	bool WavStream::load(std::string filename)
+	bool WavStream::load(std::string name, DataSource *source)
 	{
-		// Open file
-		FILE *file = fopen(filename.c_str(), "rb");
-		this->file = file;
-		if (!file)
-		{
-			printf("Could not open wav file \"%s\".\n", filename.c_str());
-			return false;
-		}
+		this->source = source;
+		source->grab();
 		// Read header
 		WavHeader header;
-		if (fread((char*)&header, sizeof(WavHeader), 1, file) != 1)
+		if (source->read(&header, sizeof(WavHeader)) != sizeof(WavHeader))
 		{
 			printf("Could not read WAV header.\n");
 			return false;
@@ -95,19 +90,19 @@ namespace rk
 	unsigned int WavStream::read(void *target, unsigned int count)
 	{
 		// Read data
-		unsigned int samplesread = fread(target, framesize, count, (FILE*)file);
+		unsigned int samplesread = source->read(target, count * framesize);
+		samplesread /= framesize;
 		position += samplesread;
 		// Return number of samples read
 		return samplesread;
 	}
 	bool WavStream::isSeekable()
 	{
-		return true;
+		return source->isSeekable();
 	}
 	void WavStream::setPosition(unsigned int position)
 	{
-		fseek((FILE*)file, ((int)this->position - position) * framesize,
-			SEEK_CUR);
+		source->seek(((int)this->position - position) * framesize, true);
 		this->position = position;
 	}
 	unsigned int WavStream::getPosition()

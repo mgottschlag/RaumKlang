@@ -23,13 +23,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	class DataSource;
+
 	class WavStream : public SoundStream
 	{
 		public:
 			WavStream();
 			virtual ~WavStream();
 
-			bool load(std::string filename);
+			bool load(std::string name, DataSource *source);
 
 			virtual unsigned int read(void *target, unsigned int count);
 			virtual bool isSeekable();
@@ -38,7 +40,7 @@ namespace rk
 			virtual unsigned int getSize();
 			virtual SoundFormat getFormat();
 		private:
-			void *file;
+			DataSource *source;
 			SoundFormat format;
 			unsigned int framesize;
 			unsigned int size;

@@ -22,11 +22,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 namespace rk
 {
 	class SoundStream;
+	class DataSource;
 
 	class StreamLoader
 	{
 		public:
-			virtual SoundStream *open(std::string filename) = 0;
+			virtual SoundStream *open(std::string name, DataSource *source) = 0;
 			virtual bool isExtensionSupported(std::string extension) = 0;
 			virtual std::string getSupportedExtensions() = 0;
 

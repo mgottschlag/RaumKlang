@@ -26,7 +26,7 @@ namespace rk
 		public:
 			static OggVorbisLoader &get();
 
-			virtual SoundStream *open(std::string filename);
+			virtual SoundStream *open(std::string name, DataSource *source);
 			virtual bool isExtensionSupported(std::string extension);
 			virtual std::string getSupportedExtensions();
 

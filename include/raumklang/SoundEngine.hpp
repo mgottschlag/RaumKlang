@@ -30,6 +30,7 @@ namespace rk
 	class StreamLoader;
 	class SoundStream;
 	class SoundRecorder;
+	class DataSource;
 
 	/**
 	 * Central sound engine class.
@@ -79,6 +80,25 @@ namespace rk
 			 * Loads a sound source from a file.
 			 */
 			virtual SoundSource *getSource(std::string filename) = 0;
+			/**
+			 * Loads a sound source from memory.
+			 * @param name Name of the sound source. Has to contain the
+			 * extension (e.g. .wav) for the sound format at the end of the
+			 * string.
+			 * @param data Data buffer to be used for the sound source.
+			 * @param size Size of the data buffer.
+			 */
+			virtual SoundSource *getSource(std::string name, void *data,
+				unsigned int size) = 0;
+			/**
+			 * Loads a sound source from an arbitrary data source.
+			 * @param name Name of the sound source. Has to contain the
+			 * extension (e.g. .wav) for the sound format at the end of the
+			 * string.
+			 * @param source Data source to load the sound from.
+			 */
+			virtual SoundSource *getSource(std::string name,
+				DataSource *source) = 0;
 
 			/**
 			 * Plays a sound from an already loaded sound source in 2D. For
@@ -182,7 +202,7 @@ namespace rk
 			void startUpdateThread();
 
 			void initStreamLoaders();
-			SoundStream *getStream(std::string filename);
+			SoundStream *getStream(std::string name, DataSource *source);
 		private:
 			std::vector<StreamLoader*> loaders;
 	};

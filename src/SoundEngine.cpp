@@ -81,18 +81,18 @@ namespace rk
 		registerStreamLoader(&OggVorbisLoader::get());
 		registerStreamLoader(&WavLoader::get());
 	}
-	SoundStream *SoundEngine::getStream(std::string filename)
+	SoundStream *SoundEngine::getStream(std::string name, DataSource *source)
 	{
 		// Get the extension
-		if (filename.rfind(".") == std::string::npos)
+		if (name.rfind(".") == std::string::npos)
 			return 0;
-		std::string extension = filename.substr(filename.rfind(".") + 1);
+		std::string extension = name.substr(name.rfind(".") + 1);
 		// Try all stream loaders
 		for (unsigned int i = 0; i < loaders.size(); i++)
 		{
 			if (loaders[i]->isExtensionSupported(extension))
 			{
-				SoundStream *stream = loaders[i]->open(filename);
+				SoundStream *stream = loaders[i]->open(name, source);
 				// If the stream could not be loaded, try other loaders
 				if (stream)
 					return stream;

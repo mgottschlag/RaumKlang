@@ -25,10 +25,10 @@ namespace rk
 		return loader;
 	}
 
-	SoundStream *OggVorbisLoader::open(std::string filename)
+	SoundStream *OggVorbisLoader::open(std::string name, DataSource *source)
 	{
 		OggVorbisStream *stream = new OggVorbisStream();
-		if (!stream->load(filename))
+		if (!stream->load(name, source))
 		{
 			delete stream;
 			return 0;

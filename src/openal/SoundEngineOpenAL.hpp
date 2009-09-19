@@ -43,6 +43,9 @@ namespace rk
 			virtual Listener *getListener();
 
 			virtual SoundSource *getSource(std::string filename);
+			virtual SoundSource *getSource(std::string name, void *data,
+				unsigned int size);
+			virtual SoundSource *getSource(std::string name, DataSource *source);
 
 			virtual Sound *play2D(SoundSource *source, bool looped = false,
 				bool paused = false);

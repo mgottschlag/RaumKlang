@@ -25,13 +25,15 @@ struct OggVorbis_File;
 
 namespace rk
 {
+	class DataSource;
+
 	class OggVorbisStream : public SoundStream
 	{
 		public:
 			OggVorbisStream();
 			virtual ~OggVorbisStream();
 
-			bool load(std::string filename);
+			bool load(std::string name, DataSource *source);
 
 			virtual unsigned int read(void *target, unsigned int count);
 			virtual bool isSeekable();

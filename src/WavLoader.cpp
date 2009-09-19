@@ -25,10 +25,10 @@ namespace rk
 		return loader;
 	}
 
-	SoundStream *WavLoader::open(std::string filename)
+	SoundStream *WavLoader::open(std::string name, DataSource *source)
 	{
 		WavStream *stream = new WavStream();
-		if (!stream->load(filename))
+		if (!stream->load(name, source))
 		{
 			delete stream;
 			return 0;

@@ -20,6 +20,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundOpenAL.hpp"
 #include "ScopedLock.hpp"
 #include "SoundRecorderOpenAL.hpp"
+#include <raumklang/MemorySource.hpp>
+#include <raumklang/FileSource.hpp>
 
 #include <AL/alut.h>
 #include <cstring>
@@ -113,25 +115,43 @@ namespace rk
 
 	SoundSource *SoundEngineOpenAL::getSource(std::string filename)
 	{
-		// Get stream
-		SoundStream *stream = getStream(filename);
-		if (!stream)
-		{
-			printf("Could not load sound stream \"%s\".\n", filename.c_str());
-			return 0;
-		}
-		// Create sound source
-		// TODO: Cache and reuse sources
-		SoundSourceOpenAL *source = new SoundSourceOpenAL();
-		if (!source->init(filename, stream))
+		FileSource *source = new FileSource();
+		if (!source->open(filename))
 		{
 			delete source;
 			return 0;
 		}
-		return source;
+		return getSource(filename, source);
+	}
+	SoundSource *SoundEngineOpenAL::getSource(std::string name, void *data,
+		unsigned int size)
+	{
+		MemorySource *source = new MemorySource(data, size);
+		return getSource(name, source);
+	}
+	SoundSource *SoundEngineOpenAL::getSource(std::string name,
+		DataSource *source)
+	{
+		// Get stream
+		SoundStream *stream = getStream(name, source);
+		if (!stream)
+		{
+			printf("Could not load sound stream \"%s\".\n", name.c_str());
+			return 0;
+		}
+		// Create sound source
+		// TODO: Cache and reuse sources
+		SoundSourceOpenAL *soundsource = new SoundSourceOpenAL();
+		if (!soundsource->init(name, stream))
+		{
+			delete soundsource;
+			return 0;
+		}
+		return soundsource;
 	}
 
-	Sound *SoundEngineOpenAL::play2D(SoundSource *source, bool looped, bool paused)
+	Sound *SoundEngineOpenAL::play2D(SoundSource *source, bool looped,
+		bool paused)
 	{
 		// Create sound
 		SoundOpenAL *sound = new SoundOpenAL(this);
