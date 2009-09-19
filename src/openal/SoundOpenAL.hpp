@@ -61,12 +61,16 @@ namespace rk
 			virtual void setPlayPosition(unsigned int msecs);
 			virtual unsigned int getPlayPosition();
 
+			virtual void setStopEventReceiver(SoundStopEventReceiver *receiver);
+
 			virtual SoundSource *getSoundSource();
 
 			virtual void grab() const;
 			virtual void drop() const;
 
 			void update();
+
+			void doStopCallback();
 		private:
 			SoundEngineOpenAL *engine;
 			unsigned int sound;
@@ -76,6 +80,8 @@ namespace rk
 			bool loaded;
 			bool is3d;
 			mutable int refcount;
+
+			SoundStopEventReceiver *receiver;
 
 			Mutex mutex;
 	};

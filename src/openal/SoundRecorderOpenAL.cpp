@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundEngineOpenAL.hpp"
 #include "OpenAL.hpp"
 #include "ScopedLock.hpp"
+#include <raumklang/SoundDataReceiver.hpp>
 
 #include <AL/alc.h>
 #include <cstdlib>
@@ -25,7 +26,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 namespace rk
 {
 	SoundRecorderOpenAL::SoundRecorderOpenAL(SoundEngineOpenAL *engine)
-		: engine(engine), device(0), recordeddata(0), recordedsize(0)
+		: engine(engine), device(0), recordeddata(0), recordedsize(0),
+		receiver(0)
 	{
 	}
 	SoundRecorderOpenAL::~SoundRecorderOpenAL()
@@ -58,7 +60,8 @@ namespace rk
 		delete this;
 	}
 
-	bool SoundRecorderOpenAL::startRecording(const SoundFormat &format)
+	bool SoundRecorderOpenAL::startRecording(const SoundFormat &format,
+				SoundDataReceiver *receiver, bool buffering)
 	{
 		if (device)
 			stopRecording();
@@ -73,6 +76,10 @@ namespace rk
 		// Start recording
 		alcCaptureStart((ALCdevice*)device);
 		this->format = format;
+		this->receiver = receiver;
+		if (!receiver)
+			buffering = true;
+		this->buffering = buffering;
 		return true;
 	}
 	void SoundRecorderOpenAL::stopRecording()
@@ -92,11 +99,25 @@ namespace rk
 			recordeddata = realloc(recordeddata, recordedsize + datasize);
 			alcCaptureSamples((ALCdevice*)device,
 				(char*)recordeddata + recordedsize, samplesleft);
+			if (receiver)
+			{
+				// Data callback
+				receiver->onDataReceived((char*)recordeddata + recordedsize,
+					samplesleft, format);
+			}
 			recordedsize += datasize;
+			if (!buffering)
+			{
+				// Free buffer again at once
+				free(recordeddata);
+				recordeddata = 0;
+				recordedsize = 0;
+			}
 		}
 		// Close device
 		alcCaptureCloseDevice((ALCdevice*)device);
 		device = 0;
+		receiver = 0;
 	}
 	void *SoundRecorderOpenAL::getRecordedData()
 	{
@@ -137,14 +158,27 @@ namespace rk
 		int samplesleft;
 		alcGetIntegerv((ALCdevice*)device, ALC_CAPTURE_SAMPLES, 1,
 			&samplesleft);
-		if (samplesleft > format.samplerate / 8)
+		if (samplesleft > (int)format.samplerate / 8)
 		{
 			// If we have more than 125 ms, load them into the buffer
 			unsigned int datasize = samplesleft * format.getFrameSize();
 			recordeddata = realloc(recordeddata, recordedsize + datasize);
 			alcCaptureSamples((ALCdevice*)device,
 				(char*)recordeddata + recordedsize, samplesleft);
+			if (receiver)
+			{
+				// Data callback
+				receiver->onDataReceived((char*)recordeddata + recordedsize,
+					samplesleft, format);
+			}
 			recordedsize += datasize;
+			if (!buffering)
+			{
+				// Free buffer again at once
+				free(recordeddata);
+				recordeddata = 0;
+				recordedsize = 0;
+			}
 		}
 	}
 }

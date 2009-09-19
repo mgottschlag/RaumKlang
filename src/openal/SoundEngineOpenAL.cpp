@@ -253,6 +253,7 @@ namespace rk
 			if (sounds[i]->isStopped())
 			{
 				// Remove stopped sounds
+				sounds[i]->doStopCallback();
 				sounds[i]->drop();
 				sounds.erase(sounds.begin() + i);
 				i--;

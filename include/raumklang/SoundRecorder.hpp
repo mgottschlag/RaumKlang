@@ -23,6 +23,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
+	class SoundDataReceiver;
+
 	/**
 	 * Class to capture sound from any sound input device.
 	 */
@@ -39,7 +41,8 @@ namespace rk
 			 * Starts recording sound with the given format. This also calls
 			 * clearRecordedData() internally.
 			 */
-			virtual bool startRecording(const SoundFormat &format) = 0;
+			virtual bool startRecording(const SoundFormat &format,
+				SoundDataReceiver *receiver = 0, bool buffering = true) = 0;
 			/**
 			 * Stops recording.
 			 */

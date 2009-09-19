@@ -19,11 +19,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "SoundEngineOpenAL.hpp"
 #include "ScopedLock.hpp"
 #include "OpenAL.hpp"
+#include <raumklang/SoundStopEventReceiver.hpp>
 
 namespace rk
 {
 	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) :engine(engine),
-		source(0), loaded(false), refcount(0)
+		source(0), loaded(false), refcount(0), receiver(0)
 	{
 	}
 	SoundOpenAL::~SoundOpenAL()
@@ -95,6 +96,7 @@ namespace rk
 		grab();
 		alSourceStop(sound);
 		engine->removeSound(this);
+		doStopCallback();
 		drop();
 	}
 	bool SoundOpenAL::isStopped()
@@ -209,6 +211,11 @@ namespace rk
 		return position * 1000;
 	}
 
+	void SoundOpenAL::setStopEventReceiver(SoundStopEventReceiver *receiver)
+	{
+		this->receiver = receiver;
+	}
+
 	SoundSource *SoundOpenAL::getSoundSource()
 	{
 		return source;
@@ -249,5 +256,11 @@ namespace rk
 				}
 			}
 		}
+	}
+
+	void SoundOpenAL::doStopCallback()
+	{
+		if (receiver)
+			receiver->onSoundStopped(this);
 	}
 }

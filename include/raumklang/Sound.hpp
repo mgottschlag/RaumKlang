@@ -23,6 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 namespace rk
 {
 	class SoundSource;
+	class SoundStopEventReceiver;
 
 	/**
 	 * Main class for every 2D or 3D sound. This class uses reference counting.
@@ -132,6 +133,12 @@ namespace rk
 			 * Returns the current position in the stream in milliseconds.
 			 */
 			virtual unsigned int getPlayPosition() = 0;
+
+			/**
+			 * Sets the stop event receiver for this sound. Sound stop events
+			 * are triggered every time a sound stops playing.
+			 */
+			virtual void setStopEventReceiver(SoundStopEventReceiver *receiver) = 0;
 
 			/**
 			 * Returns the sound source connected to this sound.

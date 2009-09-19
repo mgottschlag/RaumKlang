@@ -35,7 +35,8 @@ namespace rk
 
 			virtual void destroy();
 
-			virtual bool startRecording(const SoundFormat &format);
+			virtual bool startRecording(const SoundFormat &format,
+				SoundDataReceiver *receiver = 0, bool buffering = true);
 			virtual void stopRecording();
 			virtual void *getRecordedData();
 			virtual unsigned int getRecordedFrames();
@@ -53,6 +54,9 @@ namespace rk
 			void *recordeddata;
 			unsigned int recordedsize;
 			SoundFormat format;
+
+			SoundDataReceiver *receiver;
+			bool buffering;
 
 			Mutex mutex;
 	};

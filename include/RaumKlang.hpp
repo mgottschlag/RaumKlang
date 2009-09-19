@@ -17,8 +17,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _RAUMKLANG_HPP_INCLUDED_
 #define _RAUMKLANG_HPP_INCLUDED_
 
-#include <raumklang/SoundEngine.hpp>
-#include <raumklang/SoundRecorder.hpp>
+#include "raumklang/SoundEngine.hpp"
+#include "raumklang/SoundRecorder.hpp"
+#include "raumklang/Sound.hpp"
+#include "raumklang/DataSource.hpp"
+#include "raumklang/SoundDataReceiver.hpp"
+#include "raumklang/SoundStopEventReceiver.hpp"
 
 /**
  * \mainpage RaumKlang
@@ -38,6 +42,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * the raw stream from the underlying rk::SoundStream. On the other side,
  * rk::Listener represents the virtual ear of the sound engine (can be
  * retrieved via rk::SoundEngine::getListener()).
+ *
+ * A class for sound input can be created via
+ * rk::SoundEngine::createSoundRecorder().
  * \subsection example Example
  * \code
  * #include <RaumKlang.hpp>
