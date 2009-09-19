@@ -165,6 +165,16 @@ namespace rk
 		return play3D(source, looped, paused);
 	}
 
+	std::vector<SoundDevice> SoundEngineOpenAL::getRecorderDevices()
+	{
+		// TODO
+		return std::vector<SoundDevice>();
+	}
+	SoundRecorder *SoundEngineOpenAL::createSoundRecorder(std::string device)
+	{
+		return 0;
+	}
+
 	bool SoundEngineOpenAL::update()
 	{
 		ScopedLock lock(mutex);

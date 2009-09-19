@@ -29,6 +29,7 @@ namespace rk
 	class SoundSource;
 	class StreamLoader;
 	class SoundStream;
+	class SoundRecorder;
 
 	/**
 	 * Central sound engine class.
@@ -147,6 +148,19 @@ namespace rk
 			 */
 			virtual Sound *play3D(std::string file, bool looped = false,
 				bool paused = false) = 0;
+
+			/**
+			 * Returns a list with the devices which can be used to create a
+			 * sound recorder with createSoundRecorder().
+			 */
+			virtual std::vector<SoundDevice> getRecorderDevices() = 0;
+			/**
+			 * Creates a sound recorder.
+			 * @param device Device to be used for recording sound. Can be an
+			 * empty string for the default device, or any id from the list
+			 * returned by getRecorderDevices().
+			 */
+			virtual SoundRecorder *createSoundRecorder(std::string device = "") = 0;
 
 			/**
 			 * Registers a custom stream loader. This can be used to make the

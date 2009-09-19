@@ -16,7 +16,6 @@ set(SRC
 	src/OggVorbisStream.cpp
 	src/ScopedLock.cpp
 	src/SoundEngine.cpp
-	src/SoundRecorder.cpp
 	src/SoundSource.cpp
 	src/WavLoader.cpp
 	src/WavStream.cpp

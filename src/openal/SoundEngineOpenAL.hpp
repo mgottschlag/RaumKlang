@@ -52,6 +52,9 @@ namespace rk
 			virtual Sound *play3D(std::string file, bool looped = false,
 				bool paused = false);
 
+			virtual std::vector<SoundDevice> getRecorderDevices();
+			virtual SoundRecorder *createSoundRecorder(std::string device = "");
+
 			virtual bool update();
 
 			void addSound(SoundOpenAL *sound);
