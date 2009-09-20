@@ -43,9 +43,27 @@ namespace rk
 	{
 		// TODO
 	}
+	void ListenerOpenAL::setOrientation(const Vector3F &forward,
+		const Vector3F &up)
+	{
+		float atup[6] = {forward.x, forward.y, forward.z, up.x, up.y, up.z};
+		alListenerfv(AL_ORIENTATION, atup);
+	}
 	Vector3F ListenerOpenAL::getOrientation()
 	{
+		// TODO
 		return Vector3F(0, 0, 0);
+	}
+	void ListenerOpenAL::getOrientation(Vector3F &forward, Vector3F &up)
+	{
+		float atup[6];
+		alGetListenerfv(AL_ORIENTATION, atup);
+		forward.x = atup[0];
+		forward.y = atup[1];
+		forward.z = atup[2];
+		up.x = atup[3];
+		up.y = atup[4];
+		up.z = atup[5];
 	}
 
 	void ListenerOpenAL::setVelocity(const Vector3F &velocity)

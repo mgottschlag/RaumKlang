@@ -46,9 +46,18 @@ namespace rk
 			 */
 			virtual void setOrientation(const Vector3F &orientation) = 0;
 			/**
-			 * Returns the orientation of the listener.
+			 * Sets the orientation of the listener.
+			 */
+			virtual void setOrientation(const Vector3F &forward,
+				const Vector3F &up) = 0;
+			/**
+			 * Returns the orientation of the listener in euler angles.
 			 */
 			virtual Vector3F getOrientation() = 0;
+			/**
+			 * Returns the orientation of the listener.
+			 */
+			virtual void getOrientation(Vector3F &forward, Vector3F &up) = 0;
 
 			/**
 			 * Sets the velocity of the listener. This is used for effects like

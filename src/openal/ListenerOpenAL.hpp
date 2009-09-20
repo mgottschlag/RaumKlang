@@ -31,7 +31,10 @@ namespace rk
 			virtual Vector3F getPosition();
 
 			virtual void setOrientation(const Vector3F &orientation);
+			virtual void setOrientation(const Vector3F &forward,
+				const Vector3F &up);
 			virtual Vector3F getOrientation();
+			virtual void getOrientation(Vector3F &forward, Vector3F &up);
 
 			virtual void setVelocity(const Vector3F &velocity);
 			virtual Vector3F getVelocity();
