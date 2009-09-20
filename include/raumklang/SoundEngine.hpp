@@ -170,6 +170,24 @@ namespace rk
 				bool paused = false) = 0;
 
 			/**
+			 * Sets the master volume of the sound engine.
+			 */
+			virtual void setVolume(float volume) = 0;
+			/**
+			 * Returns the master volume.
+			 */
+			virtual float getVolume() = 0;
+
+			/**
+			 * Pauses/resumes all currently active sounds.
+			 */
+			virtual void setAllPaused(bool paused) = 0;
+			/**
+			 * Stops all currently active (playing or paused) sounds.
+			 */
+			virtual void stopAll() = 0;
+
+			/**
 			 * Returns a list with the devices which can be used to create a
 			 * sound recorder with createSoundRecorder().
 			 */

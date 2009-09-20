@@ -56,6 +56,12 @@ namespace rk
 			virtual Sound *play3D(std::string file, bool looped = false,
 				bool paused = false);
 
+			virtual void setVolume(float volume);
+			virtual float getVolume();
+
+			virtual void setAllPaused(bool paused);
+			virtual void stopAll();
+
 			virtual std::vector<SoundDevice> getRecorderDevices();
 			virtual SoundRecorder *createSoundRecorder(std::string device = "");
 
@@ -69,6 +75,8 @@ namespace rk
 			virtual ~SoundEngineOpenAL();
 		private:
 			SoundEngineOpenAL();
+
+			bool supportsCapture();
 
 			Listener *listener;
 			std::vector<SoundOpenAL*> sounds;
