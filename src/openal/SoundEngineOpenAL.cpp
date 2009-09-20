@@ -23,6 +23,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "OpenAL.hpp"
 #include <raumklang/MemorySource.hpp>
 #include <raumklang/FileSource.hpp>
+#include <raumklang/FileLogger.hpp>
+#include <raumklang/ConsoleLogger.hpp>
+
 
 #include <AL/alc.h>
 #include <cstring>
@@ -59,9 +62,20 @@ namespace rk
 
 	bool SoundEngineOpenAL::init(std::string device)
 	{
+		// Create logger
+		FileLogger *logger = new FileLogger;
+		if (logger->init("RaumKlang.htm"))
+		{
+			setLogger(logger);
+		}
+		else
+		{
+			delete logger;
+			setLogger(new ConsoleLogger());
+		}
+		// Get default device
 		if (device == "")
 		{
-			// Get default device
 			device = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 		}
 		// Setup OpenAL context
@@ -72,6 +86,10 @@ namespace rk
 		alcMakeContextCurrent(context);
 		if (alcGetError(dev) != ALC_NO_ERROR)
 			return false;
+		// Startup message
+		getLogger()->writeLine(ELL_Information, "RaumKlang 0.0.1 (OpenAL)");
+		getLogger()->writeLine(ELL_Information,
+			std::string("Device: ") + device);
 		// Create listener
 		listener = new ListenerOpenAL();
 		// Add stream loaders
@@ -105,14 +123,15 @@ namespace rk
 		unsigned int error = alGetError();
 		if (error != AL_NO_ERROR)
 		{
-			printf("AL error on exit: %s!\n", getOpenALErrorString(error));
+			getLogger()->write(ELL_Error, "AL error on exit: %s!\n",
+				getOpenALErrorString(error));
 		}
 		ALCcontext *context = alcGetCurrentContext();
 		ALCdevice *dev = alcGetContextsDevice(context);
 		error = alcGetError(dev);
 		if (error != AL_NO_ERROR)
 		{
-			printf("ALC error on exit!\n");
+			getLogger()->writeLine(ELL_Error, "ALC error on exit!\n");
 		}
 		alcMakeContextCurrent(0);
 		alcDestroyContext(context);
@@ -154,7 +173,8 @@ namespace rk
 		SoundStream *stream = getStream(name, source);
 		if (!stream)
 		{
-			printf("Could not load sound stream \"%s\".\n", name.c_str());
+			getLogger()->write(ELL_Error,
+				"Could not load sound stream \"%s\".\n", name.c_str());
 			return 0;
 		}
 		// Create sound source
@@ -257,7 +277,6 @@ namespace rk
 		std::vector<SoundDevice> devices;
 		while (*devicelist)
 		{
-			printf("Device: %s\n", devicelist);
 			devices.push_back(SoundDevice(devicelist, devicelist));
 			devicelist += strlen(devicelist) + 1;
 		}

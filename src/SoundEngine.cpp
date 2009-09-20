@@ -65,6 +65,15 @@ namespace rk
 		}
 	}
 
+	void SoundEngine::setLogger(Logger *logger)
+	{
+		this->logger = logger;
+	}
+	LoggerPointer SoundEngine::getLogger()
+	{
+		return logger;
+	}
+
 	void SoundEngine::registerStreamLoader(StreamLoader *loader)
 	{
 		loaders.push_back(loader);

@@ -17,8 +17,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _RAUMKLANG_SOUNDENGINE_HPP_INCLUDED_
 #define _RAUMKLANG_SOUNDENGINE_HPP_INCLUDED_
 
-#include <raumklang/SoundDriver.hpp>
-#include <raumklang/SoundDevice.hpp>
+#include "SoundDriver.hpp"
+#include "SoundDevice.hpp"
+#include "Logger.hpp"
 
 #include <vector>
 
@@ -188,6 +189,17 @@ namespace rk
 			virtual void stopAll() = 0;
 
 			/**
+			 * Sets the logger used for all output from the sound engine. By
+			 * default, a file logger logging to "RaumKlang.htm" is created,
+			 * or text is logged to stdout if that file could not be opened.
+			 */
+			virtual void setLogger(Logger *logger);
+			/**
+			 * Returns the logger of the sound engine.
+			 */
+			virtual LoggerPointer getLogger();
+
+			/**
 			 * Returns a list with the devices which can be used to create a
 			 * sound recorder with createSoundRecorder().
 			 */
@@ -221,6 +233,8 @@ namespace rk
 
 			void initStreamLoaders();
 			SoundStream *getStream(std::string name, DataSource *source);
+
+			LoggerPointer logger;
 		private:
 			std::vector<StreamLoader*> loaders;
 	};

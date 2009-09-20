@@ -4,5 +4,6 @@
 /cmake_install.cmake
 /test1
 /libRaumKlang.so
+/RaumKlang.htm
 /docs/doxygen
 *.*~

@@ -40,8 +40,9 @@ namespace rk
 		if (device == "")
 		{
 			device = alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
-			printf("Default device: %s\n", device.c_str());
 		}
+		engine->getLogger()->write(ELL_Information, "Capture device: %s\n",
+			device.c_str());
 		devicename = device;
 		return true;
 	}
