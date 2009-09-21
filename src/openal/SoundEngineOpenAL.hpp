@@ -43,9 +43,15 @@ namespace rk
 			virtual Listener *getListener();
 
 			virtual SoundSource *getSource(std::string filename);
+			virtual SoundSource *getSourcePCM(std::string filename,
+				const SoundFormat &format);
 			virtual SoundSource *getSource(std::string name, void *data,
 				unsigned int size);
+			virtual SoundSource *getSourcePCM(std::string name, void *data,
+				unsigned int size, const SoundFormat &format);
 			virtual SoundSource *getSource(std::string name, DataSource *source);
+			virtual SoundSource *getSourcePCM(std::string name,
+				DataSource *source, const SoundFormat &format);
 
 			virtual Sound *play2D(SoundSource *source, bool looped = false,
 				bool paused = false);

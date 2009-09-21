@@ -19,6 +19,7 @@ set(SRC
 	src/Mutex.cpp
 	src/OggVorbisLoader.cpp
 	src/OggVorbisStream.cpp
+	src/PCMStream.cpp
 	src/ScopedLock.cpp
 	src/SoundEngine.cpp
 	src/SoundSource.cpp

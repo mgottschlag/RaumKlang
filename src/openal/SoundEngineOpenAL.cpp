@@ -21,6 +21,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "ScopedLock.hpp"
 #include "SoundRecorderOpenAL.hpp"
 #include "OpenAL.hpp"
+#include "PCMStream.hpp"
 #include <raumklang/MemorySource.hpp>
 #include <raumklang/FileSource.hpp>
 #include <raumklang/FileLogger.hpp>
@@ -160,11 +161,28 @@ namespace rk
 		}
 		return getSource(filename, source);
 	}
+	SoundSource *SoundEngineOpenAL::getSourcePCM(std::string filename,
+		const SoundFormat &format)
+	{
+		FileSource *source = new FileSource();
+		if (!source->open(filename))
+		{
+			delete source;
+			return 0;
+		}
+		return getSourcePCM(filename, source, format);
+	}
 	SoundSource *SoundEngineOpenAL::getSource(std::string name, void *data,
 		unsigned int size)
 	{
 		MemorySource *source = new MemorySource(data, size);
 		return getSource(name, source);
+	}
+	SoundSource *SoundEngineOpenAL::getSourcePCM(std::string name, void *data,
+		unsigned int size, const SoundFormat &format)
+	{
+		MemorySource *source = new MemorySource(data, size);
+		return getSourcePCM(name, source, format);
 	}
 	SoundSource *SoundEngineOpenAL::getSource(std::string name,
 		DataSource *source)
@@ -177,6 +195,23 @@ namespace rk
 				"Could not load sound stream \"%s\".\n", name.c_str());
 			return 0;
 		}
+		// Create sound source
+		// TODO: Cache and reuse sources
+		SoundSourceOpenAL *soundsource = new SoundSourceOpenAL();
+		if (!soundsource->init(name, stream))
+		{
+			delete soundsource;
+			return 0;
+		}
+		return soundsource;
+	}
+	SoundSource *SoundEngineOpenAL::getSourcePCM(std::string name,
+		DataSource *source, const SoundFormat &format)
+	{
+		if (format.getFrameSize())
+			return 0;
+		// Get stream
+		PCMStream *stream = new PCMStream(name, source, format);
 		// Create sound source
 		// TODO: Cache and reuse sources
 		SoundSourceOpenAL *soundsource = new SoundSourceOpenAL();

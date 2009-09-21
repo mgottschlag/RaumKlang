@@ -32,6 +32,7 @@ namespace rk
 	class SoundStream;
 	class SoundRecorder;
 	class DataSource;
+	class SoundFormat;
 
 	/**
 	 * Central sound engine class.
@@ -82,6 +83,11 @@ namespace rk
 			 */
 			virtual SoundSource *getSource(std::string filename) = 0;
 			/**
+			 * Loads a sound source from a file with raw PCM sound data.
+			 */
+			virtual SoundSource *getSourcePCM(std::string filename,
+				const SoundFormat &format) = 0;
+			/**
 			 * Loads a sound source from memory.
 			 * @param name Name of the sound source. Has to contain the
 			 * extension (e.g. .wav) for the sound format at the end of the
@@ -92,6 +98,15 @@ namespace rk
 			virtual SoundSource *getSource(std::string name, void *data,
 				unsigned int size) = 0;
 			/**
+			 * Loads a sound source from raw PCM sound data.
+			 * @param name Name of the sound source.
+			 * @param data Data buffer to be used for the sound source.
+			 * @param size Size of the data buffer.
+			 * @param format Format of the PCM sound data
+			 */
+			virtual SoundSource *getSourcePCM(std::string name, void *data,
+				unsigned int size, const SoundFormat &format) = 0;
+			/**
 			 * Loads a sound source from an arbitrary data source.
 			 * @param name Name of the sound source. Has to contain the
 			 * extension (e.g. .wav) for the sound format at the end of the
@@ -100,6 +115,14 @@ namespace rk
 			 */
 			virtual SoundSource *getSource(std::string name,
 				DataSource *source) = 0;
+			/**
+			 * Loads a sound source from raw PCM sound data.
+			 * @param name Name of the sound source.
+			 * @param source Data source to load the sound from.
+			 * @param format Format of the PCM sound data
+			 */
+			virtual SoundSource *getSourcePCM(std::string name,
+				DataSource *source, const SoundFormat &format) = 0;
 
 			/**
 			 * Plays a sound from an already loaded sound source in 2D. For
