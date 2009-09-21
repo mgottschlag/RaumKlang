@@ -39,3 +39,11 @@ target_link_libraries(RaumKlang openal ogg vorbis vorbisfile pthread)
 
 add_executable(test1 tests/test1.cpp)
 target_link_libraries(test1 RaumKlang)
+
+# Tutorials
+
+add_executable(01.QuickStart tutorials/01.QuickStart/01.QuickStart.cpp)
+target_link_libraries(01.QuickStart RaumKlang)
+
+add_executable(02.3DSound tutorials/02.3DSound/02.3DSound.cpp)
+target_link_libraries(02.3DSound RaumKlang)

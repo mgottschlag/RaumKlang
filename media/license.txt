@@ -1,0 +1,11 @@
+rain.wav:
+  Creative Commons Sampling Plus 1.0 License
+  http://creativecommons.org/licenses/sampling+/1.0/
+From:
+  http://www.freesound.org/samplesViewSingle.php?id=2519
+
+thunder.ogg:
+  Creative Commons Sampling Plus 1.0 License
+  http://creativecommons.org/licenses/sampling+/1.0/
+From:
+  http://www.freesound.org/samplesViewSingle.php?id=2519
