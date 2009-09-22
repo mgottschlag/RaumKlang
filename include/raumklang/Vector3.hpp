@@ -57,6 +57,86 @@ namespace rk
 				return sqrt(getLengthSquared());
 			}
 
+			/**
+			 * Rotates the vector around the z axis.
+			 * @param angle Angle in degrees.
+			 */
+			void rotateXY(float angle)
+			{
+				angle *= 3.1415f / 180.0f;
+				float s = sin(angle);
+				float c = cos(angle);
+				*this = Vector3<T>(c * x - s * y, s * x + c * y, z);
+			}
+			/**
+			 * Rotates the vector around the y axis.
+			 * @param angle Angle in degrees.
+			 */
+			void rotateXZ(float angle)
+			{
+				angle *= 3.1415f / 180.0f;
+				float s = sin(angle);
+				float c = cos(angle);
+				*this = Vector3<T>(-c * x + s * z, y, s * x + c * z);
+			}
+			/**
+			 * Rotates the vector around the x axis.
+			 * @param angle Angle in degrees.
+			 */
+			void rotateYZ(float angle)
+			{
+				angle *= 3.1415f / 180.0f;
+				float s = sin(angle);
+				float c = cos(angle);
+				*this = Vector3<T>(x, c * y - s * z, s * y + c * z);
+			}
+			/**
+			 * Rotates the vector using the given angles. First z rotation is
+			 * applied, then x and then z.
+			 */
+			void rotate(const Vector3<float> &angles)
+			{
+				rotateXY(angles.z);
+				rotateYZ(angles.x);
+				rotateXZ(angles.y);
+			}
+
+			/**
+			 * Dot product.
+			 */
+			float dot(const Vector3<T> other)
+			{
+				return x * other.x + y * other.y + z * other.z;
+			}
+			/**
+			 * Cross product.
+			 */
+			Vector3<T> cross(const Vector3<T> other)
+			{
+				return Vector3<T>(y * other.z - z * other.y,
+				                  z * other.x - x * other.z,
+				                  x * other.y - y * other.x);
+			}
+
+			/**
+			 * Returns the rotation of this vector relative to (0/0/1).
+			 */
+			Vector3<float> getAngle()
+			{
+				Vector3<float> angle;
+				angle.y = atan2(x, z) * 180.0f / 3.1415f;
+				angle.x = atan2(sqrt(x * x + z * z), y) * 180.0f / 3.1415f - 90;
+				if (angle.y < 0)
+					angle.y += 360;
+				if (angle.y >= 360)
+					angle.y -= 360;
+				if (angle.x < 0)
+					angle.x += 360;
+				if (angle.x >= 360)
+					angle.x -= 360;
+				return angle;
+			}
+
 			template<typename T2> Vector3<T> operator*(T2 s) const
 			{
 				return Vector3<T>((T)(x * s), (T)(y * s), (T)(z * s));
