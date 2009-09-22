@@ -113,7 +113,13 @@ namespace rk
 		// Delete recorders
 		while (recorders.size() != 0)
 			recorders[0]->destroy();
-		// TODO: Delete sources
+		// Delete sources
+		std::map<std::string, SoundSource*>::iterator it = sources.begin();
+		while (it != sources.end())
+		{
+			it->second->drop();
+			it++;
+		}
 		// Delete sounds
 		for (unsigned int i = 0; i < sounds.size(); i++)
 		{
@@ -151,8 +157,15 @@ namespace rk
 		return listener;
 	}
 
-	SoundSource *SoundEngineOpenAL::getSource(std::string filename)
+	SoundSource *SoundEngineOpenAL::getSource(std::string filename, bool reuse)
 	{
+		if (reuse)
+		{
+			// Look for cached source
+			SoundSource *source = getCachedSource(filename);
+			if (source)
+				return source;
+		}
 		FileSource *source = new FileSource();
 		if (!source->open(filename))
 		{
@@ -173,8 +186,15 @@ namespace rk
 		return getSourcePCM(filename, source, format);
 	}
 	SoundSource *SoundEngineOpenAL::getSource(std::string name, void *data,
-		unsigned int size)
+		unsigned int size, bool reuse)
 	{
+		if (reuse)
+		{
+			// Look for cached source
+			SoundSource *source = getCachedSource(name);
+			if (source)
+				return source;
+		}
 		MemorySource *source = new MemorySource(data, size);
 		return getSource(name, source);
 	}
@@ -185,8 +205,15 @@ namespace rk
 		return getSourcePCM(name, source, format);
 	}
 	SoundSource *SoundEngineOpenAL::getSource(std::string name,
-		DataSource *source)
+		DataSource *source, bool reuse)
 	{
+		if (reuse)
+		{
+			// Look for cached source
+			SoundSource *source = getCachedSource(name);
+			if (source)
+				return source;
+		}
 		// Get stream
 		SoundStream *stream = getStream(name, source);
 		if (!stream)
@@ -202,6 +229,15 @@ namespace rk
 		{
 			delete soundsource;
 			return 0;
+		}
+		if (reuse)
+		{
+			ScopedLock lock(mutex);
+			// Add source to source list
+			// TODO: Memory limit?
+			soundsource->grab();
+			sources.insert(std::pair<std::string, SoundSource*>(name,
+				soundsource));
 		}
 		return soundsource;
 	}
@@ -407,5 +443,15 @@ namespace rk
 		ALCcontext *context = alcGetCurrentContext();
 		ALCdevice *dev = alcGetContextsDevice(context);
 		return alcIsExtensionPresent(dev, "ALC_EXT_CAPTURE") == AL_TRUE;
+	}
+
+	SoundSource *SoundEngineOpenAL::getCachedSource(std::string name)
+	{
+		ScopedLock lock(mutex);
+		// Look for the name in the map and return the source conntected to it
+		std::map<std::string, SoundSource*>::iterator it = sources.find(name);
+		if (it == sources.end())
+			return 0;
+		return it->second;
 	}
 }

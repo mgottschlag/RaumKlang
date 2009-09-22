@@ -22,6 +22,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "Mutex.hpp"
 
 #include <vector>
+#include <map>
 
 namespace rk
 {
@@ -42,14 +43,16 @@ namespace rk
 
 			virtual Listener *getListener();
 
-			virtual SoundSource *getSource(std::string filename);
+			virtual SoundSource *getSource(std::string filename,
+				bool reuse = true);
 			virtual SoundSource *getSourcePCM(std::string filename,
 				const SoundFormat &format);
 			virtual SoundSource *getSource(std::string name, void *data,
-				unsigned int size);
+				unsigned int size, bool reuse = true);
 			virtual SoundSource *getSourcePCM(std::string name, void *data,
 				unsigned int size, const SoundFormat &format);
-			virtual SoundSource *getSource(std::string name, DataSource *source);
+			virtual SoundSource *getSource(std::string name, DataSource *source,
+				bool reuse = true);
 			virtual SoundSource *getSourcePCM(std::string name,
 				DataSource *source, const SoundFormat &format);
 
@@ -84,8 +87,12 @@ namespace rk
 
 			bool supportsCapture();
 
+			SoundSource *getCachedSource(std::string name);
+
 			Listener *listener;
 			std::vector<SoundOpenAL*> sounds;
+
+			std::map<std::string, SoundSource*> sources;
 
 			volatile bool running;
 			volatile bool threadstopped;

@@ -81,7 +81,8 @@ namespace rk
 			/**
 			 * Loads a sound source from a file.
 			 */
-			virtual SoundSource *getSource(std::string filename) = 0;
+			virtual SoundSource *getSource(std::string filename,
+				bool reuse = true) = 0;
 			/**
 			 * Loads a sound source from a file with raw PCM sound data.
 			 */
@@ -96,7 +97,7 @@ namespace rk
 			 * @param size Size of the data buffer.
 			 */
 			virtual SoundSource *getSource(std::string name, void *data,
-				unsigned int size) = 0;
+				unsigned int size, bool reuse = true) = 0;
 			/**
 			 * Loads a sound source from raw PCM sound data.
 			 * @param name Name of the sound source.
@@ -114,7 +115,7 @@ namespace rk
 			 * @param source Data source to load the sound from.
 			 */
 			virtual SoundSource *getSource(std::string name,
-				DataSource *source) = 0;
+				DataSource *source, bool reuse = true) = 0;
 			/**
 			 * Loads a sound source from raw PCM sound data.
 			 * @param name Name of the sound source.
