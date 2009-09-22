@@ -44,7 +44,7 @@ namespace rk
 			file.seekg(position, std::ios_base::cur);
 		else
 			file.seekg(position);
-		return file.bad();
+		return !file.bad();
 	}
 	unsigned int FileSource::tell()
 	{
