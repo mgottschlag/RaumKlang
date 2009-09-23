@@ -23,6 +23,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "raumklang/DataSource.hpp"
 #include "raumklang/SoundDataReceiver.hpp"
 #include "raumklang/SoundStopEventReceiver.hpp"
+#include "raumklang/Listener.hpp"
 
 /**
  * \mainpage RaumKlang

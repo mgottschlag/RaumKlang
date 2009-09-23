@@ -141,6 +141,17 @@ void rkSoundSetPlayPosition(rkSound sound, unsigned int msecs);
 unsigned int rkSoundGetPlayPosition(rkSound sound);
 rkSoundSource rkSoundGetSoundSource(rkSound sound);
 
+void rkListenerSetPosition(rkListener listener, rkVector3 position);
+rkVector3 rkListenerGetPosition(rkListener listener);
+void rkListenerSetVelocity(rkListener listener, rkVector3 velocity);
+rkVector3 rkListenerGetVelocity(rkListener listener);
+void rkListenerSetOrientationEuler(rkListener listener, rkVector3 orientation);
+rkVector3 rkListenerGetOrientationEuler(rkListener listener);
+void rkListenerSetOrientation(rkListener listener, rkVector3 forward,
+	rkVector3 up);
+void rkListenerGetOrientation(rkListener listener, rkVector3 *forward,
+	rkVector3 *up);
+
 /**
  * @}
  */

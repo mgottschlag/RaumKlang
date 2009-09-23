@@ -25,6 +25,7 @@ set(SRC
 	src/SoundSource.cpp
 	src/WavLoader.cpp
 	src/WavStream.cpp
+	src/c/Listener.cpp
 	src/c/Sound.cpp
 	src/c/SoundEngine.cpp
 	src/openal/ListenerOpenAL.cpp
