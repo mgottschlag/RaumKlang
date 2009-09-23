@@ -35,6 +35,7 @@ namespace rk
 	class Sound : public ReferenceCountedBase
 	{
 		public:
+			Sound();
 			virtual ~Sound()
 			{
 			}
@@ -153,6 +154,17 @@ namespace rk
 			 * Returns the sound source connected to this sound.
 			 */
 			virtual SoundSource *getSoundSource() = 0;
+
+			/**
+			 * Allows the user to store one arbitrary pointer to the sound.
+			 */
+			void setUserData(void *userdata);
+			/**
+			 * Returns the user pointer for this sound.
+			 */
+			void *getUserData();
+		private:
+			void *userdata;
 	};
 }
 

@@ -23,8 +23,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace rk
 {
-	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) :engine(engine),
-		source(0), loaded(false), refcount(0), receiver(0)
+	SoundOpenAL::SoundOpenAL(SoundEngineOpenAL *engine) : Sound(),
+		engine(engine), source(0), loaded(false), refcount(0), receiver(0)
 	{
 	}
 	SoundOpenAL::~SoundOpenAL()
