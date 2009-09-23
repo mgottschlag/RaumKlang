@@ -49,3 +49,6 @@ target_link_libraries(01.QuickStart RaumKlang)
 
 add_executable(02.3DSound tutorials/02.3DSound/02.3DSound.cpp)
 target_link_libraries(02.3DSound RaumKlang)
+
+add_executable(06.C tutorials/06.C/06.C.c)
+target_link_libraries(06.C RaumKlang)
