@@ -90,6 +90,31 @@ typedef struct rkVector3
 	float z;
 } rkVector3;
 
+typedef enum rkEventType
+{
+	rkEventSoundStopped,
+	rkEventDataReceived
+} rkEventType;
+
+typedef struct rkEvent
+{
+	rkEventType type;
+} rkEvent;
+
+typedef struct rkSoundStopEvent
+{
+	rkEvent event;
+	rkSound sound;
+} rkSoundStopEvent;
+
+typedef struct rkSoundDataEvent
+{
+	rkEvent event;
+	void *data;
+	unsigned int framecount;
+	rkSoundFormat format;
+} rkSoundDataEvent;
+
 rkSoundEngine rkSoundEngineCreate(rkSoundDriver driver, const char *device);
 void rkSoundEngineDestroy(rkSoundEngine engine);
 const char *rkSoundEngineGetDriverName(rkSoundEngine engine);
@@ -115,7 +140,8 @@ float rkSoundEngineGetVolume(rkSoundEngine engine);
 void rkSoundEngineSetAllPaused(rkSoundEngine engine, int paused);
 void rkSoundEngineStopAll(rkSoundEngine engine);
 
-// TODO: Events
+rkEvent *rkSoundEngineGetEvent(rkSoundEngine engine);
+void rkEventDestroy(rkEvent *event);
 
 void rkSoundGrab(rkSound sound);
 void rkSoundDrop(rkSound sound);
@@ -140,6 +166,7 @@ unsigned int rkSoundGetLength(rkSound sound);
 void rkSoundSetPlayPosition(rkSound sound, unsigned int msecs);
 unsigned int rkSoundGetPlayPosition(rkSound sound);
 rkSoundSource rkSoundGetSoundSource(rkSound sound);
+void rkSoundEnableStopEvents(rkSound sound, rkSoundEngine engine);
 
 void rkListenerSetPosition(rkListener listener, rkVector3 position);
 rkVector3 rkListenerGetPosition(rkListener listener);

@@ -16,19 +16,66 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <RaumKlang.h>
 #include <RaumKlang.hpp>
+#include "Mutex.hpp"
 
 #include <cstdlib>
 #include <cstring>
-
-struct rkiSoundEngine
-{
-	rk::SoundEngine *engine;
-};
 
 static rk::SoundFormat getFormat(rkSoundFormat format)
 {
 	return rk::SoundFormat(format.channels, format.samplerate,
 		(rk::SampleFormat)format.format);
+}
+
+class CEventReceiver : public rk::SoundStopEventReceiver,
+	public rk::SoundDataReceiver
+{
+	public:
+		CEventReceiver(rkSoundEngine engine) : engine(engine)
+		{
+		}
+
+		virtual void onSoundStopped(rk::Sound *sound);
+		virtual void onDataReceived(void *data, unsigned int framecount,
+			const rk::SoundFormat &format);
+
+		rkSoundEngine engine;
+};
+
+struct rkiSoundEngine
+{
+	rk::Mutex mutex;
+	rk::SoundEngine *engine;
+	CEventReceiver *receiver;
+	unsigned int eventcount;
+	rkEvent **events;
+};
+
+static void rkSoundEngineAddEvent(rkSoundEngine engine, rkEvent *event)
+{
+	engine->mutex.lock();
+	engine->events = (rkEvent**)realloc(engine->events,
+		(engine->eventcount + 1) * sizeof(rkEvent*));
+	engine->events[engine->eventcount] = event;
+	engine->eventcount++;
+	engine->mutex.unlock();
+}
+
+void CEventReceiver::onSoundStopped(rk::Sound *sound)
+{
+	// Grab sound so that it is not deleted before we have processed the event
+	sound->grab();
+	// Create event
+	rkSoundStopEvent *event = new rkSoundStopEvent;
+	event->event.type = rkEventSoundStopped;
+	event->sound = sound;
+	// Add the event to the event queue
+	rkSoundEngineAddEvent(engine, (rkEvent*)event);
+}
+void CEventReceiver::onDataReceived(void *data, unsigned int framecount,
+	const rk::SoundFormat &format)
+{
+	// TODO
 }
 
 rkSoundEngine rkSoundEngineCreate(rkSoundDriver driver, const char *device)
@@ -39,9 +86,11 @@ rkSoundEngine rkSoundEngineCreate(rkSoundDriver driver, const char *device)
 	if (!engine)
 		return 0;
 	// Create container struct
-	rkSoundEngine container = (rkSoundEngine)malloc(sizeof(rkiSoundEngine*));
-	memset(container, 0, sizeof(rkiSoundEngine));
+	rkSoundEngine container = new rkiSoundEngine;
+	container->eventcount = 0;
+	container->events = 0;
 	container->engine = engine;
+	container->receiver = new CEventReceiver(container);
 	return container;
 }
 void rkSoundEngineDestroy(rkSoundEngine engine)
@@ -49,7 +98,8 @@ void rkSoundEngineDestroy(rkSoundEngine engine)
 	if (!engine)
 		return;
 	engine->engine->destroy();
-	free(engine);
+	delete engine->receiver;
+	delete engine;
 }
 const char *rkSoundEngineGetDriverName(rkSoundEngine engine)
 {
@@ -114,4 +164,50 @@ void rkSoundEngineSetAllPaused(rkSoundEngine engine, int paused)
 void rkSoundEngineStopAll(rkSoundEngine engine)
 {
 	engine->engine->stopAll();
+}
+
+rkEvent *rkSoundEngineGetEvent(rkSoundEngine engine)
+{
+	engine->mutex.lock();
+	rkEvent *event = 0;
+	if (engine->eventcount > 0)
+	{
+		// Get first event
+		event = engine->events[0];
+		// Remove the event from the queue
+		rkEvent **oldevents = engine->events;
+		engine->eventcount--;
+		if (engine->eventcount == 0)
+		{
+			engine->events = 0;
+		}
+		else
+		{
+			engine->events = (rkEvent**)malloc(engine->eventcount
+				* sizeof(rkEvent*));
+			memcpy(engine->events, &oldevents[1],
+				engine->eventcount * sizeof(rkEvent*));
+		}
+		free(oldevents);
+	}
+	engine->mutex.unlock();
+	return event;
+}
+void rkEventDestroy(rkEvent *event)
+{
+	if (event->type == rkEventSoundStopped)
+	{
+		rkSoundStopEvent *stopevent = (rkSoundStopEvent*)event;
+		((rk::Sound*)stopevent->sound)->drop();
+		delete stopevent;
+	}
+	else if (event->type == rkEventDataReceived)
+	{
+		// TODO
+	}
+}
+
+void rkSoundEnableStopEvents(rkSound sound, rkSoundEngine engine)
+{
+	((rk::Sound*)sound)->setStopEventReceiver(engine->receiver);
 }
