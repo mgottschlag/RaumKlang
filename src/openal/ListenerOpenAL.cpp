@@ -41,7 +41,11 @@ namespace rk
 
 	void ListenerOpenAL::setOrientation(const Vector3F &orientation)
 	{
-		// TODO
+		Vector3F at(0.0, 0.0, 1.0);
+		at.rotate(orientation);
+		Vector3F up(0.0, 1.0, 0.0);
+		up.rotate(orientation);
+		setOrientation(at, up);
 	}
 	void ListenerOpenAL::setOrientation(const Vector3F &forward,
 		const Vector3F &up)
@@ -51,8 +55,25 @@ namespace rk
 	}
 	Vector3F ListenerOpenAL::getOrientation()
 	{
-		// TODO
-		return Vector3F(0, 0, 0);
+		// Get orientaiton vectors
+		Vector3F forward;
+		Vector3F up;
+		getOrientation(forward, up);
+		// Get x/y rotation
+		Vector3F angles = forward.getAngle();
+		if (forward.x == 0 && forward.y == 0)
+		{
+			angles.z = up.getAngle().y;
+		}
+		else
+		{
+			// Compute z rotation
+			Vector3F normal = up.cross(forward);
+			Vector3F reference = Vector3F(0, 0, 1).cross(forward);
+			angles.z = acos(normal.dot(reference) / reference.getLength()
+				/ normal.getLength()) * 180.0f / 3.1415f;
+		}
+		return angles;
 	}
 	void ListenerOpenAL::getOrientation(Vector3F &forward, Vector3F &up)
 	{
