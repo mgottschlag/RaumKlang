@@ -39,7 +39,7 @@ namespace rk
 			bool init(std::string device);
 			virtual void destroy();
 
-			virtual std::string getDriverName();
+			virtual const char *getDriverName();
 
 			virtual Listener *getListener();
 

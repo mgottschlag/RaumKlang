@@ -147,7 +147,7 @@ namespace rk
 		delete this;
 	}
 
-	std::string SoundEngineOpenAL::getDriverName()
+	const char *SoundEngineOpenAL::getDriverName()
 	{
 		return "OpenAL";
 	}

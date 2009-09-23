@@ -71,7 +71,7 @@ namespace rk
 			 * Returns the name of the currently used driver as a string. Can
 			  for example be "OpenAL" for the OpenAL driver.
 			 */
-			virtual std::string getDriverName() = 0;
+			virtual const char *getDriverName() = 0;
 
 			/**
 			 * Returns the listener of the sound engine.
